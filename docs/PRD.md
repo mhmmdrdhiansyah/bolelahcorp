@@ -86,20 +86,22 @@ Core Stack
 | Frontend   | Next.js (App Router)           | 16.1.6       | Modern SSR/SSG, API routes built-in, no separate backend needed |
 | React      | React                          | 19.2.3       | Latest React with improved features                             |
 | Database   | MySQL 8.0+                     | 8.0+         | Reliable, full-text search, JSON support                        |
-| ORM        | Prisma                         | TBD          | Type-safe, migrations, excellent DX with TypeScript             |
-| Styling    | Tailwind CSS v4                | v4           | New @theme-based config, utility-first CSS                      |
-| Animations | Framer Motion                  | TBD          | Smooth animations, declarative API                              |
-| Forms      | React Hook Form + Zod          | TBD          | Form validation, type-safe, great UX                            |
-| Auth       | NextAuth.js (Auth.js)          | TBD          | Simple auth, session management                                 |
-| Image Opt. | Sharp                          | TBD          | Server-side image optimization (resize, format conversion)      |
+| ORM        | Prisma                         | 6.19.2       | Type-safe, migrations, excellent DX with TypeScript (v6)         |
+| Styling    | Tailwind CSS                    | 3.4.19       | Stable, production-ready, utility-first CSS                     |
+| Animations | Framer Motion                  | 12.34.3      | Smooth animations, declarative API                              |
+| Forms      | React Hook Form + Zod          | 7.71.2 / 4.3.6 | Form validation, type-safe, great UX                            |
+| Auth       | NextAuth.js (Auth.js)          | 4.24.13      | Simple auth, session management                                 |
+| Password   | bcryptjs                        | 3.0.3        | Password hashing for security                                   |
+| Image Opt. | Sharp                          | 0.34.5       | Server-side image optimization (resize, format conversion)      |
+| Utilities  | clsx, tailwind-merge           | 2.1.1 / 3.5.0 | Utility functions for className merging                         |
 | Email      | Resend/SendGrid                | TBD          | Transactional emails (optional, for contact form)               |
 | TypeScript | TypeScript                     | 5.x          | Type safety for better DX                                        |
 | Linter     | ESLint                         | 9.x          | Code quality and consistency                                    |
 
 Notes:
-- **Tailwind CSS v4** uses `@theme` directive in CSS instead of `tailwind.config.ts`
-- Custom colors defined in `app/globals.css` using CSS variables
-- See `docs/best-practices/tailwind-v4.md` for v4-specific configuration
+- **Tailwind CSS v3** uses `tailwind.config.ts` for custom colors & configuration
+- Custom colors: `bg-navy`, `bg-steel`, `bg-coral`, `text-off-white`, `text-mist`
+- See `docs/best-practices/tailwind.md` for v3 configuration
 
 Deployment
 

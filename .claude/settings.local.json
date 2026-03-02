@@ -4,7 +4,16 @@
       "Bash(npx create-next-app@latest:*)",
       "Bash(pkill:*)",
       "Bash(taskkill:*)",
-      "Bash(netstat:*)"
+      "Bash(netstat:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm install:*)",
+      "Bash(find .:*)",
+      "Bash(npx prisma:*)",
+      "Bash(mysql:*)",
+      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"ya\" npx prisma:*)",
+      "Bash(npx tsx:*)",
+      "Bash(npm run:*)",
+      "Bash(git add:*)"
     ]
   }
 }

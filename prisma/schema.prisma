@@ -1,0 +1,230 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+// ============================================================================
+// User Model
+// ============================================================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String   // Hashed password
+  image     String?
+  role      Role     @default(USER)
+  bio       String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  posts      Post[]
+  portfolios Portfolio[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+// ============================================================================
+// Blog Post Model
+// ============================================================================
+
+model Post {
+  id          String     @id @default(cuid())
+  title       String     @db.VarChar(255)
+  slug        String     @unique @db.VarChar(255)
+  excerpt     String?    @db.Text
+  content     String     @db.Text
+  coverImage  String?    @map("cover_image") @db.VarChar(255)
+  status      PostStatus @default(DRAFT)
+  publishedAt DateTime?  @map("published_at")
+  scheduledAt DateTime?  @map("scheduled_at")
+
+  // SEO
+  metaTitle       String?   @map("meta_title") @db.VarChar(255)
+  metaDescription String?   @map("meta_description") @db.Text
+  ogImage         String?   @map("og_image") @db.VarChar(255)
+
+  // Stats
+  views Int @default(0)
+
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  authorId   String     @map("author_id")
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categoryId String?    @map("category_id")
+  category   Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  postTags   PostTag[]
+
+  @@index([status, publishedAt(sort: Desc)])
+  @@index([slug])
+  @@index([authorId])
+  @@index([categoryId])
+  @@fulltext([title, content])
+  @@map("blog_posts")
+}
+
+// ============================================================================
+// Category Model
+// ============================================================================
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique @db.VarChar(255)
+  slug      String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  posts Post[]
+
+  @@index([slug])
+  @@map("categories")
+}
+
+// ============================================================================
+// Tag Model
+// ============================================================================
+
+model Tag {
+  id    String    @id @default(cuid())
+  name  String    @unique @db.VarChar(255)
+  slug  String    @unique @db.VarChar(255)
+
+  postTags PostTag[]
+
+  @@index([slug])
+  @@map("tags")
+}
+
+// ============================================================================
+// PostTag Junction Table
+// ============================================================================
+
+model PostTag {
+  postId String @map("post_id")
+  tagId  String @map("tag_id")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@index([postId])
+  @@index([tagId])
+  @@map("post_tags")
+}
+
+// ============================================================================
+// Portfolio Model
+// ============================================================================
+
+model Portfolio {
+  id           String   @id @default(cuid())
+  title        String   @db.VarChar(255)
+  slug         String   @unique @db.VarChar(255)
+  description  String   @db.Text
+  shortDesc    String?  @map("short_desc") @db.Text
+  coverImage   String   @map("cover_image") @db.VarChar(255)
+  images       Json     // Array of image URLs
+  technologies Json     // Array of tech stack names
+  projectUrl   String?  @map("project_url") @db.VarChar(255)
+  githubUrl    String?  @map("github_url") @db.VarChar(255)
+  featured     Boolean  @default(false) @map("featured")
+  order        Int      @default(0)
+  completedAt  DateTime? @map("completed_at")
+
+  // SEO
+  metaTitle       String? @map("meta_title") @db.VarChar(255)
+  metaDescription String? @map("meta_description") @db.Text
+
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  authorId String @map("author_id")
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([featured, order])
+  @@index([slug])
+  @@index([authorId])
+  @@map("portfolios")
+}
+
+// ============================================================================
+// PageSection Model
+// ============================================================================
+
+model PageSection {
+  id        String   @id @default(cuid())
+  page      String   @db.VarChar(255) // 'home', 'about', 'contact'
+  section   String   @db.VarChar(255) // 'hero', 'about', 'services'
+  title     String   @db.VarChar(255)
+  content   Json     // Flexible content structure
+  enabled   Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([page, section])
+  @@index([page, enabled])
+  @@map("page_sections")
+}
+
+// ============================================================================
+// SiteSetting Model
+// ============================================================================
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique @db.VarChar(255) @map("key")
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([key])
+  @@map("site_settings")
+}
+
+// ============================================================================
+// ContactSubmission Model
+// ============================================================================
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(255)
+  email     String   @db.VarChar(255)
+  subject   String?  @db.VarChar(255)
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  replied   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([read, createdAt(sort: Desc)])
+  @@map("contact_submissions")
+}

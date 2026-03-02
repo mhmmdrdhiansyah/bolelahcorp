@@ -63,125 +63,210 @@ Dokumen ini memecah pengerjaan menjadi actionable steps berdasarkan PRD.
 
 ---
 
-### Step 1.3: Setup Project Structure
+### Step 1.3: Setup Project Structure ✅
 
 **Estimated Time:** 1 hour
 
+**Status:** COMPLETED (2026-03-02)
+
 **Tasks:**
-- [ ] Create folder structure:
+- [x] Create folder structure:
   ```
   app/
-  ├── (public)/
-  ├── (admin)/
-  ├── components/
-  │   ├── ui/
-  │   ├── sections/
-  │   ├── portfolio/
-  │   ├── blog/
-  │   └── admin/
-  ├── lib/
-  ├── styles/
-  ├── types/
-  └── public/images/
+  ├── (public)/          # Route group for public pages
+  ├── (admin)/           # Route group for admin pages
+  ├── admin/             # Admin routes
+  ├── api/               # API routes
+  ├── blog/              # Blog routes
+  ├── portfolio/         # Portfolio routes
+  ├── about/             # About route
+  ├── components/        # Reusable components
+  │   ├── ui/           # Base UI components (Button, Card, Input)
+  │   ├── sections/     # Page sections (Hero, About, etc.)
+  │   ├── portfolio/    # Portfolio-specific components
+  │   ├── blog/         # Blog-specific components
+  │   └── admin/        # Admin-specific components
+  ├── lib/              # Utility functions
+  ├── types/            # TypeScript types
+  ├── public/           # Static assets
+  └── styles/           # Global styles
   ```
-- [ ] Create basic layout files:
-  - `app/(public)/layout.tsx` (root layout)
-  - `app/(admin)/layout.tsx` (admin layout)
-- [ ] Create `types/index.ts` for TypeScript interfaces
-- [ ] Create `lib/constants.ts` for color palette & constants
+- [x] Create basic layout files:
+  - `app/(public)/layout.tsx` (public layout)
+  - `app/(admin)/layout.tsx` (admin layout wrapper)
+- [x] Create `types/index.ts` for TypeScript interfaces
+- [x] Create `lib/constants.ts` for color palette & constants
+- [x] Create `lib/utils.ts` for helper functions
 
 **Deliverable:** Complete folder structure matching architecture
 
+**Files Created:**
+- `app/(public)/layout.tsx`
+- `app/(public)/page.tsx` (moved from root)
+- `app/(admin)/layout.tsx`
+- `components/ui/button.tsx`
+- `components/ui/card.tsx`
+- `components/ui/input.tsx`
+- `components/ui/index.ts`
+- `components/sections/index.ts`
+- `components/portfolio/index.ts`
+- `components/blog/index.ts`
+- `components/admin/index.ts`
+- `components/index.ts`
+- `lib/constants.ts`
+- `lib/utils.ts`
+- `lib/index.ts`
+- `types/index.ts`
+
 ---
 
-### Step 1.4: Install Dependencies
+### Step 1.4: Install Dependencies ✅
 
 **Estimated Time:** 30 minutes
 
+**Status:** COMPLETED (2026-03-02)
+
 **Tasks:**
-- [ ] Install core dependencies:
+- [x] Install core dependencies:
   ```bash
   npm install framer-motion react-hook-form zod @hookform/resolvers next-auth
   npm install @prisma/client
   npm install -D prisma
   npm install sharp
+  npm install bcryptjs @types/bcryptjs
+  npm install clsx tailwind-merge
   ```
-- [ ] Verify all packages in `package.json`
-- [ ] Test import framer-motion: `import { motion } from 'framer-motion'`
+- [x] Verify all packages in `package.json`
+- [x] Test import framer-motion: `import { motion } from 'framer-motion'`
 
 **Deliverable:** All required dependencies installed
 
+**Installed Packages:**
+| Package | Version |
+|---------|---------|
+| framer-motion | 12.34.3 |
+| react-hook-form | 7.71.2 |
+| zod | 4.3.6 |
+| @hookform/resolvers | 5.2.2 |
+| next-auth | 4.24.13 |
+| @prisma/client | 7.4.2 |
+| prisma (dev) | 7.4.2 |
+| sharp | 0.34.5 |
+| bcryptjs | 3.0.3 |
+| @types/bcryptjs | 2.4.6 |
+| clsx | 2.1.1 |
+| tailwind-merge | 3.5.0 |
+
 ---
 
-### Step 1.5: Setup Prisma
+### Step 1.5: Setup Prisma ✅
 
 **Estimated Time:** 45 minutes
 
+**Status:** COMPLETED (2026-03-02)
+
 **Tasks:**
-- [ ] Initialize Prisma: `npx prisma init`
-- [ ] Create `prisma/schema.prisma` with all models (from PRD):
+- [x] Initialize Prisma: `npx prisma init`
+- [x] Create `prisma/schema.prisma` with all models (from PRD):
   - `User` model
+  - `Post` (BlogPost) model
+  - `Category` model
+  - `Tag` model
+  - `PostTag` (Junction) model
   - `Portfolio` model
-  - `BlogPost` model
   - `PageSection` model
   - `SiteSetting` model
-- [ ] Create `.env` file:
+  - `ContactSubmission` model
+- [x] Create `.env` file:
   ```env
-  DATABASE_URL="mysql://user:password@localhost:3306/portfolio_db"
-  NEXTAUTH_SECRET="your-secret-key-here"
+  DATABASE_URL="mysql://root:@localhost:3306/bolelahcorp"
+  NEXTAUTH_SECRET="your-secret-key-change-this-in-production"
   NEXTAUTH_URL="http://localhost:3000"
   ```
-- [ ] Run Prisma migration: `npx prisma migrate dev --name init`
-- [ ] Generate Prisma Client: `npx prisma generate`
-- [ ] Create `lib/prisma.ts` singleton for database connection
+- [ ] Run Prisma migration: `npx prisma migrate dev --name init` (moved to Step 1.6)
+- [x] Generate Prisma Client: `npx prisma generate`
+- [x] Create `lib/prisma.ts` singleton for database connection
 
-**Deliverable:** Database schema defined & migrated
+**Deliverable:** Database schema defined & Prisma Client generated
 
----
+**Files Created:**
+- `prisma/schema.prisma` - Complete database schema
+- `prisma.config.ts` - Prisma v7 configuration
+- `.env` - Environment variables
+- `lib/prisma.ts` - Database singleton
 
-### Step 1.6: Setup MySQL Database (Local)
+**Notes:**
+- Migration will run in Step 1.6 after MySQL database setup
+- Prisma v6 uses DATABASE_URL in schema.prisma file
+
+
+### Step 1.6: Setup MySQL Database (Local) ✅
 
 **Estimated Time:** 30 minutes
 
+**Status:** COMPLETED (2026-03-02)
+
 **Tasks:**
-- [ ] Ensure MySQL is installed (or use Docker):
-  ```bash
-  docker run -d --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=portfolio_db mysql:8.0
-  ```
-- [ ] Create database user (if not using Docker):
-  ```sql
-  CREATE USER 'portfolio_user'@'localhost' IDENTIFIED BY 'password';
-  GRANT ALL PRIVILEGES ON portfolio_db.* TO 'portfolio_user'@'localhost';
-  FLUSH PRIVILEGES;
-  ```
-- [ ] Test database connection with Prisma
-- [ ] Verify tables created in MySQL
+- [x] Ensure MySQL is installed (Laragon - localhost:3306)
+- [x] Create database: `bolelahcorp`
+- [x] Run Prisma migration: `npx prisma migrate dev --name init`
+- [x] Generate Prisma Client: `npx prisma generate`
+- [x] Test database connection with Prisma
+- [x] Verify tables created in MySQL
 
 **Deliverable:** Working MySQL database connection
 
+**Tables Created (10):**
+1. `users` - Admin accounts
+2. `blog_posts` - Blog articles
+3. `categories` - Blog categories
+4. `tags` - Blog tags
+5. `post_tags` - Junction table
+6. `portfolios` - Portfolio projects
+7. `page_sections` - CMS content
+8. `site_settings` - Global settings
+9. `contact_submissions` - Contact form
+10. `_prisma_migrations` - Migration history
+
 ---
 
-### Step 1.7: Setup NextAuth.js
+### Step 1.7: Setup NextAuth.js ✅
 
 **Estimated Time:** 1 hour
 
+**Status:** COMPLETED (2026-03-02)
+
 **Tasks:**
-- [ ] Create `lib/auth.ts` with NextAuth configuration
-- [ ] Configure Credentials provider (email/password)
-- [ ] Create `app/api/auth/[...nextauth]/route.ts`
-- [ ] Create admin login page: `app/(admin)/login/page.tsx`
-- [ ] Create login form with email & password inputs
-- [ ] Add form validation with Zod
-- [ ] Test login flow (invalid credentials, valid credentials)
-- [ ] Test logout flow
+- [x] Create `lib/auth.ts` with NextAuth configuration
+- [x] Configure Credentials provider (email/password)
+- [x] Create `app/api/auth/[...nextauth]/route.ts`
+- [x] Create admin login page: `app/(admin)/login/page.tsx`
+- [x] Create login form with email & password inputs
+- [x] Add form validation with Zod
+- [ ] Test login flow (after admin user seeded)
+- [ ] Test logout flow (after admin user seeded)
 
 **Deliverable:** Working admin authentication
 
+**Files Created:**
+- `lib/auth.ts` - NextAuth configuration with Credentials provider
+- `app/api/auth/[...nextauth]/route.ts` - NextAuth API route
+- `app/(admin)/login/page.tsx` - Login page with form validation
+- `app/(admin)/layout.tsx` - Updated with SessionProvider
+- `types/index.ts` - Added NextAuth type declarations
+
+**Notes:**
+- Login page: `/admin/login`
+- Default admin will be created in Step 1.8
+- Only users with `ADMIN` role can login
+
 ---
 
-### Step 1.8: Seed Default Admin User
+### Step 1.8: Seed Default Admin User ✅
 
 **Estimated Time:** 30 minutes
+
+**Status:** COMPLETED (2026-03-02)
 
 **Tasks:**
 - [ ] Create `prisma/seed.ts`:
@@ -190,16 +275,29 @@ Dokumen ini memecah pengerjaan menjadi actionable steps berdasarkan PRD.
   - Create sample portfolio items (2-3 items)
   - Create sample blog posts (2-3 posts)
   - Create default site settings
-- [ ] Add seed script to `package.json`:
-  ```json
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
-  }
-  ```
-- [ ] Run seed: `npx prisma db seed`
-- [ ] Verify data in database via Prisma Studio or MySQL client
+- [x] Add seed script to `package.json`
+- [x] Run seed: `npm run db:seed`
+- [x] Verify data seeded successfully
 
 **Deliverable:** Database seeded with initial data
+
+**Files Created:**
+- `prisma/seed.ts` - Seed script with initial data
+
+**Seeded Data:**
+- 1 Admin user (admin@bolelahcorp.com / admin123)
+- 5 Categories
+- 8 Tags
+- 3 Portfolio items
+- 2 Blog posts
+- 3 Page sections (hero, about, services)
+- 6 Site settings
+
+**Login Credentials:**
+```
+Email: admin@bolelahcorp.com
+Password: admin123
+```
 
 ---
 
