@@ -1,26 +1,204 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Brand colors from PRD */
+  --color-navy: #1D3557;
+  --color-navy-light: #2A4A73;
+  --color-navy-dark: #152540;
+
+  --color-steel: #457B9D;
+  --color-steel-light: #5A8FB0;
+  --color-steel-dark: #36627D;
+
+  --color-coral: #E63946;
+  --color-coral-light: #F06B76;
+  --color-coral-dark: #C4202D;
+
+  --color-off-white: #F1FAEE;
+  --color-off-white-dark: #E0E9DD;
+
+  --color-mist: #A8DADC;
+  --color-mist-light: #BCE5E7;
+  --color-mist-dark: #8AC0C2;
+
+  /* Custom font sizes */
+  --font-size-hero: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+  --font-size-section-title: clamp(1.8rem, 3vw + 1rem, 3rem);
+
+  /* Custom spacing */
+  --spacing-18: 4.5rem;
+  --spacing-128: 32rem;
+
+  /* Custom border radius */
+  --radius-4xl: 2rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background-color: #1D3557;
+    color: #F1FAEE;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Container */
+  .container {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 80rem;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  /* Section */
+  .section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .section {
+      padding-top: 8rem;
+      padding-bottom: 8rem;
+    }
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background-color: #E63946;
+    color: #F1FAEE;
+  }
+
+  .btn-primary:hover {
+    background-color: #C4202D;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    transform: scale(1.05);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.95);
+  }
+
+  .btn-secondary {
+    background-color: transparent;
+    border: 2px solid #A8DADC;
+    color: #A8DADC;
+  }
+
+  .btn-secondary:hover {
+    background-color: #A8DADC;
+    color: #1D3557;
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: #F1FAEE;
+  }
+
+  .btn-ghost:hover {
+    background-color: rgba(69, 123, 157, 0.2);
+  }
+
+  /* Cards */
+  .card {
+    background-color: #457B9D;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  }
+
+  .card-hover {
+    transition: all 0.3s;
+  }
+
+  .card-hover:hover {
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    transform: translateY(-0.25rem);
+  }
+
+  /* Inputs */
+  .input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 2px solid rgba(168, 218, 220, 0.3);
+    background-color: rgba(69, 123, 157, 0.2);
+    color: #F1FAEE;
+    transition: border-color 0.2s;
+  }
+
+  .input::placeholder {
+    color: rgba(168, 218, 220, 0.5);
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: #E63946;
+  }
+
+  /* Typography */
+  .section-title {
+    font-size: var(--font-size-section-title);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .section-subtitle {
+    font-size: 1.125rem;
+    color: #A8DADC;
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Text gradient */
+  .text-gradient {
+    background: linear-gradient(to right, #A8DADC, #E63946);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  /* Glass effect */
+  .glass {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
 }
