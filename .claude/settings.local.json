@@ -13,7 +13,10 @@
       "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"ya\" npx prisma:*)",
       "Bash(npx tsx:*)",
       "Bash(npm run:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(ls:*)",
+      "Bash(rm:*)"
     ]
   }
 }
