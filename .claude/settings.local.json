@@ -17,7 +17,9 @@
       "Bash(git push:*)",
       "Bash(ls:*)",
       "Bash(rm:*)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(curl:*)",
+      "Bash(powershell:*)"
     ]
   }
 }

@@ -8,11 +8,13 @@ export { ServerHero } from './ServerHero';
 export { About } from './About';
 export { ServerAbout } from './ServerAbout';
 
-// Services Section - Step 2.4
-// export { Services } from './Services';
+// Services Section - Step 2.4 ✅
+export { Services } from './Services';
+export { ServerServices } from './ServerServices';
 
-// Testimonials Section - Step 2.5
-// export { Testimonials } from './Testimonials';
+// Testimonials Section - Step 2.5 ✅
+export { Testimonials } from './Testimonials';
+export { ServerTestimonials } from './ServerTestimonials';
 
 // Contact Section - Step 2.7
 // export { Contact } from './Contact';
