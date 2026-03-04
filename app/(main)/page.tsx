@@ -1,5 +1,7 @@
-import { ServerHero, ServerAbout, ServerServices, ServerTestimonials } from '@/components/sections';
+import { ServerHero, ServerAbout, ServerServices, ServerTestimonials, ServerContact } from '@/components/sections';
 import { ServerPortfolioGrid } from '@/components/portfolio';
+import { ServerBlogList } from '@/components/blog';
+import { Header, Footer } from '@/components/layout';
 
 // ============================================================================
 // Home Page
@@ -7,33 +9,35 @@ import { ServerPortfolioGrid } from '@/components/portfolio';
 
 export default function HomePage() {
   return (
-    <main>
-      {/* Hero Section */}
-      <ServerHero />
+    <>
+      {/* Header */}
+      <Header />
 
-      {/* About Section */}
-      <ServerAbout />
+      <main>
+        {/* Hero Section */}
+        <ServerHero />
 
-      {/* Portfolio Section */}
-      <ServerPortfolioGrid />
+        {/* About Section */}
+        <ServerAbout />
 
-      {/* Services Section */}
-      <ServerServices />
+        {/* Portfolio Section */}
+        <ServerPortfolioGrid />
 
-      {/* Testimonials Section */}
-      <ServerTestimonials />
+        {/* Services Section */}
+        <ServerServices />
 
-      {/* Placeholder for other sections - coming soon in Phase 2 */}
-      <section className="py-20 text-center">
-        <div className="container">
-          <p className="text-mist text-lg">
-            More sections coming soon... 🚧
-          </p>
-          <p className="text-mist/60 text-sm mt-2">
-            Steps 2.1-2.5: Hero, About, Portfolio, Services & Testimonials Sections Complete
-          </p>
-        </div>
-      </section>
-    </main>
+        {/* Testimonials Section */}
+        <ServerTestimonials />
+
+        {/* Blog Preview Section */}
+        <ServerBlogList />
+
+        {/* Contact Section */}
+        <ServerContact />
+      </main>
+
+      {/* Footer */}
+      <Footer />
+    </>
   );
 }

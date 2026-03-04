@@ -16,5 +16,6 @@ export { ServerServices } from './ServerServices';
 export { Testimonials } from './Testimonials';
 export { ServerTestimonials } from './ServerTestimonials';
 
-// Contact Section - Step 2.7
-// export { Contact } from './Contact';
+// Contact Section - Step 2.7 ✅
+export { Contact } from './Contact';
+export { ServerContact } from './ServerContact';
