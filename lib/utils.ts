@@ -37,6 +37,29 @@ export function formatDate(
     return '';
   }
 
+  // Handle relative format first
+  if (format === 'relative') {
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 7) {
+      const longOptions: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      };
+      return d.toLocaleDateString('en-US', longOptions);
+    }
+    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    return 'Just now';
+  }
+
   const options: Intl.DateTimeFormatOptions = {
     short: {
       year: 'numeric' as const,
@@ -49,23 +72,6 @@ export function formatDate(
       day: 'numeric' as const,
     },
   }[format];
-
-  if (format === 'relative') {
-    const now = new Date();
-    const diff = now.getTime() - d.getTime();
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days > 7) {
-      return d.toLocaleDateString('en-US', options.long);
-    }
-    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
-    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-    return 'Just now';
-  }
 
   return d.toLocaleDateString('en-US', options);
 }

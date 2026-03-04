@@ -53,7 +53,7 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: [0.25, 0.4, 0.25, 1],
+      ease: 'easeInOut' as const,
     },
   },
 };
@@ -179,7 +179,7 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
                 }}
                 transition={{
                   duration: 0.3,
-                  ease: [0.25, 0.4, 0.25, 1],
+                  ease: 'easeInOut',
                 }}
               >
                 {/* Placeholder for avatar - replace with actual image */}

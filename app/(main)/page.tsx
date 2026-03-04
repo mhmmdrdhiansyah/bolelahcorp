@@ -1,4 +1,5 @@
 import { ServerHero, ServerAbout } from '@/components/sections';
+import { ServerPortfolioGrid } from '@/components/portfolio';
 
 // ============================================================================
 // Home Page
@@ -13,6 +14,9 @@ export default function HomePage() {
       {/* About Section */}
       <ServerAbout />
 
+      {/* Portfolio Section */}
+      <ServerPortfolioGrid />
+
       {/* Placeholder for other sections - coming soon in Phase 2 */}
       <section className="py-20 text-center">
         <div className="container">
@@ -20,7 +24,7 @@ export default function HomePage() {
             More sections coming soon... 🚧
           </p>
           <p className="text-mist/60 text-sm mt-2">
-            Steps 2.1-2.2: Hero & About Sections Complete
+            Steps 2.1-2.3: Hero, About & Portfolio Sections Complete
           </p>
         </div>
       </section>

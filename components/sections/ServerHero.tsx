@@ -24,7 +24,7 @@ async function getHeroContent(): Promise<HeroContent | null> {
       return null;
     }
 
-    return section.content as HeroContent;
+    return section.content as unknown as HeroContent;
   } catch (error) {
     console.error('Error fetching hero content:', error);
     return null;

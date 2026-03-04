@@ -28,8 +28,8 @@ async function getAboutContent(): Promise<{ content: AboutContent | null; social
     });
 
     return {
-      content: aboutSection?.enabled ? (aboutSection.content as AboutContent) : null,
-      socialLinks: socialSetting?.value as SocialLinks | null,
+      content: aboutSection?.enabled ? (aboutSection.content as unknown as AboutContent) : null,
+      socialLinks: socialSetting?.value as unknown as SocialLinks | null,
     };
   } catch (error) {
     console.error('Error fetching about content:', error);
