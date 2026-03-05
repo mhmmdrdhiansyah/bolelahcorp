@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 // ============================================================================
 // Types
@@ -30,107 +31,130 @@ interface BlogCardProps {
 }
 
 // ============================================================================
-// Blog Card Component
+// Blog Card Component (Modernized)
 // ============================================================================
 
 export function BlogCard({ post, className, index = 0 }: BlogCardProps) {
-  // Format date
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Format date visually
   const formatDate = (date: Date | null) => {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
+    if (!date) return { day: '', month: '', year: '' };
+    const d = new Date(date);
+    return {
+      day: d.getDate().toString().padStart(2, '0'),
+      month: d.toLocaleString('en-US', { month: 'short' }),
+      year: d.getFullYear(),
+    };
   };
+
+  const dateData = formatDate(post.publishedAt);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
+      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        'group relative w-full h-[380px] rounded-3xl overflow-hidden bg-steel/20 border border-mist/10',
+        'group relative w-full flex flex-col rounded-3xl overflow-hidden bg-white/5 border border-white/5 hover:bg-white/10 transition-colors duration-500 cursor-pointer h-full',
         className
       )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Background Image */}
-      {post.coverImage ? (
-        <Image
-          src={post.coverImage}
-          alt={post.title}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-steel to-navy text-mist/30">
-          <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-          </svg>
-        </div>
-      )}
+      {/* Glow behind card */}
+      <div
+        className={cn(
+          "absolute -inset-1 rounded-[inherit] opacity-0 blur-xl transition-opacity duration-700 pointer-events-none",
+          isHovered ? "opacity-100 bg-coral/20" : "opacity-0"
+        )}
+      />
 
-      {/* Gradient Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/60 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-95" />
-      <div className="absolute inset-0 bg-coral/10 opacity-0 group-hover:opacity-100 mix-blend-overlay transition-opacity duration-500" />
-
-      {/* Category Badge (Top Left) */}
-      {post.category && (
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: index * 0.1 + 0.2 }}
-          className="absolute top-4 left-4 z-10"
-        >
-          <span className="px-3 py-1 text-xs font-semibold tracking-wide rounded-full bg-coral/90 text-off-white backdrop-blur-md border border-coral/20 shadow-lg">
-            {post.category.name}
-          </span>
-        </motion.div>
-      )}
-
-      {/* Content Container (Bottom Aligned) */}
-      <div className="absolute inset-0 flex flex-col justify-end p-6">
-        {/* Date Badge */}
-        {post.publishedAt && (
-          <div className="mb-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-75">
-            <span className="text-xs font-medium text-mist/70">
-              {formatDate(post.publishedAt)}
-            </span>
+      {/* Image Section (Top half) */}
+      <div className="relative w-full aspect-[4/3] overflow-hidden bg-steel/20">
+        {post.coverImage ? (
+          <Image
+            src={post.coverImage}
+            alt={post.title}
+            fill
+            className="object-cover transition-transform duration-[1000ms] group-hover:scale-110 group-hover:rotate-1"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-steel to-navy text-mist/30">
+            <div className="absolute inset-0 opacity-10 bg-[url('/grid.svg')] bg-center bg-cover mix-blend-overlay" />
+            <svg className="w-16 h-16 opacity-50 mb-2 transition-transform duration-700 group-hover:scale-110 group-hover:rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            </svg>
+            <span className="text-xs uppercase tracking-widest font-semibold opacity-50">Article Image</span>
           </div>
         )}
 
-        {/* Title & Excerpt */}
-        <div className="transform transition-transform duration-500 group-hover:-translate-y-1">
-          <Link href={`/blog/${post.slug}`} className="inline-block group/link">
-            <h3 className="text-xl md:text-2xl font-bold text-off-white mb-2 group-hover/link:text-coral transition-colors flex items-center gap-2">
+        {/* Overlays */}
+        <div className={cn(
+          "absolute inset-0 bg-coral/20 mix-blend-overlay transition-opacity duration-700 pointer-events-none",
+          isHovered ? "opacity-100" : "opacity-0"
+        )} />
+
+        {/* Category / Date Badges */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10 pointer-events-none">
+          {post.category && (
+            <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg bg-navy/80 text-coral backdrop-blur-md border border-white/10 shadow-lg relative overflow-hidden">
+              <span className="relative z-10">{post.category.name}</span>
+            </span>
+          )}
+
+          {post.publishedAt && (
+            <div className="flex flex-col items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-3 py-2 text-off-white shadow-lg transform transition-transform duration-500 group-hover:-translate-y-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-coral/90">{dateData.month}</span>
+              <span className="text-xl font-black leading-none my-0.5">{dateData.day}</span>
+              <span className="text-[10px] font-semibold text-mist/70">{dateData.year}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Content Section (Bottom half) */}
+      <div className="flex flex-col flex-grow p-6 relative z-10 bg-gradient-to-b from-navy/50 to-transparent pointer-events-none">
+
+        <div className="flex-grow">
+          {/* Title */}
+          <Link href={`/blog/${post.slug}`} className="inline-block pointer-events-auto w-full group/link">
+            <h3 className="text-xl md:text-2xl font-bold text-off-white mb-3 group-hover/link:text-coral transition-colors duration-300 leading-snug line-clamp-2">
               {post.title}
-              <svg className="w-5 h-5 opacity-0 -translate-x-2 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
             </h3>
           </Link>
 
+          {/* Excerpt */}
           {post.excerpt && (
-            <p className="text-mist/80 text-sm line-clamp-3 mt-2 font-light">
+            <p className="text-mist/80 text-sm md:text-base line-clamp-3 font-light leading-relaxed mb-6">
               {post.excerpt}
             </p>
           )}
         </div>
 
-        {/* Read More Link (Sliding up on hover) */}
-        <div className="flex items-center gap-2 mt-4 h-0 opacity-0 group-hover:h-auto group-hover:opacity-100 transition-all duration-500 delay-150 overflow-hidden">
+        {/* Decorative Read More */}
+        <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between pointer-events-auto w-full">
           <Link
             href={`/blog/${post.slug}`}
-            className="flex items-center gap-2 text-sm font-medium text-coral hover:text-off-white transition-colors"
+            className="flex items-center gap-2 text-sm font-semibold tracking-wide text-coral hover:text-white transition-colors group/read object-left"
           >
-            Read More
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            Read Article
+            <div className="w-6 h-6 rounded-full bg-coral/10 flex items-center justify-center transition-transform group-hover/read:translate-x-1 group-hover/read:bg-coral">
+              <svg className="w-3 h-3 text-current group-hover/read:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
           </Link>
+
+          {/* Reading Time Estimator (Mock) */}
+          <span className="text-xs font-medium text-mist/50 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            5 min read
+          </span>
         </div>
       </div>
     </motion.div>

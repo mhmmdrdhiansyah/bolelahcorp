@@ -1,8 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { useRef, useState } from 'react';
 
 // ============================================================================
 // Types
@@ -47,13 +48,14 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
   visible: {
     opacity: 1,
     y: 0,
+    filter: 'blur(0px)',
     transition: {
-      duration: 0.5,
-      ease: 'easeInOut' as const,
+      duration: 0.8,
+      ease: [0.16, 1, 0.3, 1] as const,
     },
   },
 };
@@ -75,11 +77,12 @@ function SocialLink({ href, label, icon }: SocialLinkProps) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-steel/30 border border-mist/20 text-mist hover:bg-coral hover:text-off-white hover:border-coral hover:shadow-lg hover:shadow-coral/30 transition-all duration-300"
-      whileHover={{ scale: 1.1, rotate: 5 }}
+      className="group relative inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 text-mist hover:text-off-white hover:border-coral/50 transition-all duration-300 overflow-hidden"
+      whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
     >
-      {icon}
+      <div className="absolute inset-0 bg-coral/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
+      <span className="relative z-10">{icon}</span>
     </motion.a>
   );
 }
@@ -113,11 +116,20 @@ const socialIcons = {
 };
 
 // ============================================================================
-// Main Component (Client Component - only animations, no async)
+// Main Component (Client Component)
 // ============================================================================
 
 export function About({ content, socialLinks, className, id = 'about' }: AboutProps) {
-  // Default content if not provided (fallback)
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const avatarY = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const avatarRotate = useTransform(scrollYProgress, [0, 1], [-5, 5]);
+
+  // Default content
   const defaultContent: AboutContent = {
     name: 'Muhammad Ardhiansyah',
     role: 'Full-Stack Developer',
@@ -139,87 +151,86 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
 
   return (
     <section
+      ref={containerRef}
       id={id}
-      className={cn('section relative', className)}
+      className={cn('section relative py-32 bg-navy', className)}
     >
       <motion.div
-        className="container"
+        className="container px-4 sm:px-6 z-10 relative"
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
       >
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Avatar & Name */}
-          <motion.div variants={itemVariants} className="relative">
-            {/* Avatar Container */}
-            <div className="relative mx-auto lg:mx-0 w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+
+          {/* Left: Avatar & Displays */}
+          <motion.div variants={itemVariants} className="lg:col-span-5 relative">
+            <motion.div
+              className="relative mx-auto lg:mx-0 w-72 h-72 sm:w-96 sm:h-96"
+              style={{ y: avatarY, rotate: avatarRotate }}
+            >
               {/* Background Decorations */}
               <motion.div
-                className="absolute inset-0 rounded-3xl bg-gradient-to-br from-coral to-mist opacity-20 blur-2xl"
+                className="absolute inset-0 rounded-[2rem] bg-gradient-to-tr from-coral to-mist opacity-30 blur-[40px] mix-blend-screen"
                 animate={{
                   scale: [1, 1.1, 1],
-                  rotate: [0, 5, 0],
+                  rotate: [0, 5, -5, 0],
                 }}
                 transition={{
-                  duration: 6,
+                  duration: 8,
                   repeat: Infinity,
-                  repeatType: 'reverse',
-                  ease: 'easeInOut',
+                  ease: "easeInOut",
                 }}
               />
 
-              {/* Avatar Image */}
-              <motion.div
-                className="relative rounded-3xl overflow-hidden border-4 border-mist/20 shadow-2xl bg-steel/30"
-                whileHover={{
-                  scale: 1.05,
-                  rotate: 2,
-                  boxShadow: '0 25px 50px -12px rgba(230, 57, 70, 0.25)',
-                }}
-                transition={{
-                  duration: 0.3,
-                  ease: 'easeInOut',
-                }}
+              {/* Avatar Image Frame */}
+              <div
+                className="relative h-full w-full rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.3)] bg-navy/80 backdrop-blur-md group"
               >
-                {/* Placeholder for avatar - replace with actual image */}
-                <div className="w-full h-full bg-gradient-to-br from-steel to-navy flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-6xl lg:text-7xl font-bold text-coral mb-2">
+                {/* Glow Follow Effect (Pseudo) */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />
+
+                {/* Placeholder for avatar */}
+                <div className="w-full h-full bg-gradient-to-br from-steel/20 to-navy flex items-center justify-center relative overflow-hidden">
+                  {/* Abstract Lines */}
+                  <div className="absolute inset-0 opacity-20 bg-[url('/grid.svg')] bg-center bg-cover mix-blend-overlay" />
+
+                  <motion.div
+                    className="text-center z-10"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ type: "spring" as const, stiffness: 200, damping: 10 }}
+                  >
+                    <div className="text-8xl lg:text-9xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-coral to-coral/50 mb-2 drop-shadow-xl">
                       {aboutContent.name.split(' ').map(n => n[0]).join('')}
                     </div>
-                    <div className="text-mist/60 text-sm">Avatar</div>
-                  </div>
+                    <div className="text-mist/60 text-sm uppercase tracking-widest font-semibold">Avatar / Photo</div>
+                  </motion.div>
                 </div>
-                {/* Remove this block and uncomment when using actual image: */}
-                {/* <Image
-                  src={aboutContent.avatar}
-                  alt={aboutContent.name}
-                  fill
-                  className="object-cover"
-                  priority
-                /> */}
-              </motion.div>
+              </div>
 
-              {/* Status Badge */}
+              {/* Status Badge - Floating */}
               <motion.div
-                className="absolute -bottom-4 -right-4 lg:bottom-8 lg:-right-8 px-4 py-2 rounded-full bg-coral text-off-white text-sm font-semibold shadow-lg"
+                className="absolute -bottom-6 -right-6 lg:-bottom-8 lg:-right-10 px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-off-white text-sm font-semibold shadow-2xl z-20"
                 animate={{
-                  y: [0, -5, 0],
+                  y: [-5, 5, -5],
                 }}
                 transition={{
-                  duration: 2,
+                  duration: 4,
                   repeat: Infinity,
                   ease: 'easeInOut',
                 }}
               >
-                Available for work
+                <span className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                  Available for work
+                </span>
               </motion.div>
-            </div>
+            </motion.div>
 
             {/* Social Links - Mobile First */}
             <motion.div
-              className="mt-8 flex justify-center gap-3 lg:hidden"
+              className="mt-16 flex justify-center gap-4 lg:hidden relative z-20"
               variants={itemVariants}
             >
               {social.github && <SocialLink href={social.github} label="GitHub" icon={socialIcons.github} />}
@@ -232,88 +243,94 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
           {/* Right: Info & Skills */}
           <motion.div
             variants={itemVariants}
-            className="text-center lg:text-left"
+            className="lg:col-span-7 text-center lg:text-left pt-10 lg:pt-0"
           >
             {/* Section Label */}
-            <motion.p
+            <motion.div
               variants={itemVariants}
-              className="text-coral font-semibold mb-2"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-coral/10 border border-coral/20 text-coral text-sm font-semibold tracking-wider uppercase mb-6"
             >
-              ABOUT ME
-            </motion.p>
+              <span className="w-1.5 h-1.5 rounded-full bg-coral" />
+              About Me
+            </motion.div>
 
             {/* Name */}
             <motion.h2
               variants={itemVariants}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-off-white mb-2"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-off-white mb-4 tracking-tight"
             >
               {aboutContent.name}
             </motion.h2>
 
             {/* Role */}
-            <motion.p
+            <motion.h3
               variants={itemVariants}
-              className="text-xl text-mist mb-6"
+              className="text-2xl lg:text-3xl text-gradient bg-gradient-to-r from-mist to-steel bg-clip-text text-transparent font-medium mb-8"
             >
               {aboutContent.role}
-            </motion.p>
+            </motion.h3>
 
             {/* Bio */}
             <motion.p
               variants={itemVariants}
-              className="text-mist/80 leading-relaxed mb-8"
+              className="text-lg text-mist/80 leading-relaxed mb-10 max-w-2xl mx-auto lg:mx-0 font-light"
             >
               {aboutContent.bio}
             </motion.p>
 
             {/* Skills */}
-            <motion.div variants={itemVariants} className="mb-8">
-              <h3 className="text-sm font-semibold text-mist/60 uppercase tracking-wider mb-4">
-                Tech Stack
-              </h3>
-              <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+            <motion.div variants={itemVariants} className="mb-12">
+              <h4 className="text-sm font-semibold text-mist/50 uppercase tracking-[0.2em] mb-4">
+                Core Stack & Technologies
+              </h4>
+              <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start">
                 {aboutContent.skills.map((skill, index) => (
-                  <motion.span
+                  <motion.div
                     key={skill}
-                    className="px-4 py-2 rounded-lg bg-steel/30 border border-mist/20 text-mist text-sm font-medium hover:bg-coral/20 hover:border-coral/50 hover:text-off-white transition-all duration-300"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+                    className="relative group px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-mist text-sm font-medium hover:text-off-white transition-colors duration-300 overflow-hidden cursor-default"
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{
                       delay: index * 0.05,
-                      duration: 0.3,
+                      duration: 0.4,
                     }}
-                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileHover={{ y: -4 }}
                   >
-                    {skill}
-                  </motion.span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-coral/0 via-coral/10 to-coral/0 opacity-0 group-hover:opacity-100 group-hover:animate-[shimmer_1.5s_infinite] -translate-x-full transition-all duration-300" />
+                    <span className="relative z-10">{skill}</span>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
 
-            {/* Social Links - Desktop Only */}
+            {/* Bottom Actions Row */}
             <motion.div
               variants={itemVariants}
-              className="hidden lg:flex gap-3"
+              className="flex flex-col sm:flex-row items-center gap-6 lg:gap-8 justify-center lg:justify-start"
             >
-              {social.github && <SocialLink href={social.github} label="GitHub" icon={socialIcons.github} />}
-              {social.linkedin && <SocialLink href={social.linkedin} label="LinkedIn" icon={socialIcons.linkedin} />}
-              {social.twitter && <SocialLink href={social.twitter} label="Twitter" icon={socialIcons.twitter} />}
-              {social.instagram && <SocialLink href={social.instagram} label="Instagram" icon={socialIcons.instagram} />}
-              {social.email && <SocialLink href={social.email} label="Email" icon={socialIcons.email} />}
-            </motion.div>
-
-            {/* CTA Button */}
-            <motion.div variants={itemVariants} className="mt-8">
+              {/* CTA Button */}
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-coral text-off-white font-semibold hover:bg-coral-dark hover:shadow-lg hover:shadow-coral/30 hover:-translate-y-1 transition-all duration-300"
+                className="group relative inline-flex items-center gap-2 px-8 py-4 rounded-full bg-coral text-off-white font-semibold shadow-lg shadow-coral/20 hover:shadow-coral/40 transition-all duration-300 overflow-hidden"
               >
-                Get In Touch
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                <span className="relative z-10 flex items-center gap-2">
+                  Get In Touch
+                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </span>
               </Link>
+
+              {/* Social Links - Desktop Only */}
+              <div className="hidden lg:flex gap-3">
+                {social.github && <SocialLink href={social.github} label="GitHub" icon={socialIcons.github} />}
+                {social.linkedin && <SocialLink href={social.linkedin} label="LinkedIn" icon={socialIcons.linkedin} />}
+                {social.twitter && <SocialLink href={social.twitter} label="Twitter" icon={socialIcons.twitter} />}
+                {social.instagram && <SocialLink href={social.instagram} label="Instagram" icon={socialIcons.instagram} />}
+                {social.email && <SocialLink href={social.email} label="Email" icon={socialIcons.email} />}
+              </div>
             </motion.div>
           </motion.div>
         </div>

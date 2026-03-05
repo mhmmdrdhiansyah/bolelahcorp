@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useState, useRef, useEffect } from 'react';
 
 // ============================================================================
 // Types
@@ -44,13 +45,15 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 50, scale: 0.95 },
   visible: {
     opacity: 1,
     y: 0,
+    scale: 1,
     transition: {
-      duration: 0.5,
-      ease: 'easeOut' as const,
+      type: "spring" as const,
+      stiffness: 100,
+      damping: 20
     },
   },
 };
@@ -66,13 +69,13 @@ interface StarRatingProps {
 
 function StarRating({ rating, className }: StarRatingProps) {
   return (
-    <div className={cn('flex gap-1', className)}>
+    <div className={cn('flex gap-1.5', className)}>
       {[1, 2, 3, 4, 5].map((star) => (
         <svg
           key={star}
           className={cn(
-            'w-5 h-5',
-            star <= rating ? 'text-coral' : 'text-mist/30'
+            'w-4 h-4 md:w-5 md:h-5 transition-transform hover:scale-125',
+            star <= rating ? 'text-coral drop-shadow-[0_0_8px_rgba(230,57,70,0.8)]' : 'text-mist/20'
           )}
           fill="currentColor"
           viewBox="0 0 20 20"
@@ -85,97 +88,87 @@ function StarRating({ rating, className }: StarRatingProps) {
 }
 
 // ============================================================================
-// Testimonial Card Component
+// Testimonial Card Component (Modernized Carousel Item)
 // ============================================================================
 
 interface TestimonialCardProps {
   testimonial: Testimonial;
-  index: number;
+  isActive: boolean;
+  onClick: () => void;
 }
 
-function TestimonialCard({ testimonial, index }: TestimonialCardProps) {
-  // Get initials for avatar placeholder
-  const initials = testimonial.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+function TestimonialCard({ testimonial, isActive, onClick }: TestimonialCardProps) {
+  const initials = testimonial.name.split(' ').map(n => n[0]).join('').substring(0, 2);
 
   return (
-    <motion.div
-      variants={itemVariants}
-      className="group flex-shrink-0 w-full snap-start"
+    <div
+      onClick={onClick}
+      className={cn(
+        "relative rounded-[2.5rem] p-8 md:p-12 transition-all duration-700 cursor-pointer h-full flex flex-col justify-between overflow-hidden",
+        isActive
+          ? "bg-white/10 border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] scale-100 opacity-100 z-10"
+          : "bg-white/5 border border-white/5 opacity-40 scale-90 hover:opacity-70 z-0"
+      )}
     >
-      <motion.div
-        className="card card-hover h-full p-8 rounded-2xl bg-steel/20 border border-mist/10 backdrop-blur-sm"
-        whileHover={{
-          y: -8,
-          transition: { duration: 0.3, ease: 'easeOut' },
-        }}
-      >
-        {/* Quote Icon */}
-        <div className="mb-6">
-          <svg
-            className="w-10 h-10 text-coral/40"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-          </svg>
-        </div>
+      {/* Glow behind active card */}
+      {isActive && (
+        <div className="absolute top-0 right-0 w-64 h-64 bg-coral/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+      )}
 
-        {/* Testimonial Content */}
-        <p className="text-mist/90 leading-relaxed mb-6 text-sm sm:text-base">
-          &ldquo;{testimonial.content}&rdquo;
-        </p>
+      {/* Quote Icon */}
+      <div className="mb-8">
+        <svg
+          className={cn(
+            "w-12 h-12 transition-colors duration-500",
+            isActive ? "text-coral/50" : "text-mist/20"
+          )}
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+        </svg>
+      </div>
 
-        {/* Star Rating */}
-        {testimonial.rating && (
-          <div className="mb-6">
-            <StarRating rating={testimonial.rating} />
-          </div>
-        )}
+      {/* Content */}
+      <p className={cn(
+        "text-lg md:text-2xl font-light leading-relaxed mb-10 transition-colors duration-500 italic flex-grow",
+        isActive ? "text-off-white" : "text-mist"
+      )}>
+        "{testimonial.content}"
+      </p>
 
-        {/* Author Info */}
+      {/* Bottom Row */}
+      <div className="flex items-center justify-between border-t border-white/10 pt-8">
         <div className="flex items-center gap-4">
-          {/* Avatar */}
-          <motion.div
-            className="w-12 h-12 rounded-full bg-gradient-to-br from-coral/30 to-steel/30 flex items-center justify-center text-off-white font-semibold text-sm border border-mist/20 group-hover:scale-110 transition-transform duration-300"
-            whileHover={{ rotate: 5 }}
-          >
+          <div className={cn(
+            "w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg border-2 overflow-hidden transition-all duration-500",
+            isActive ? "border-coral text-off-white bg-gradient-to-br from-navy to-steel" : "border-mist/20 text-mist bg-navy"
+          )}>
             {testimonial.avatar ? (
-              <img
-                src={testimonial.avatar}
-                alt={testimonial.name}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              initials
-            )}
-          </motion.div>
+              <img src={testimonial.avatar} alt={testimonial.name} className="w-full h-full object-cover" />
+            ) : initials}
+          </div>
 
-          {/* Name & Role */}
           <div>
-            <h4 className="text-off-white font-semibold text-base group-hover:text-coral transition-colors duration-300">
+            <h4 className={cn(
+              "font-bold text-lg transition-colors duration-500",
+              isActive ? "text-off-white" : "text-mist"
+            )}>
               {testimonial.name}
             </h4>
-            <p className="text-mist/60 text-sm">
-              {testimonial.role}
-              {testimonial.company && (
-                <span>
-                  {' '}
-                  @ {testimonial.company}
-                </span>
-              )}
+            <p className="text-mist/60 text-sm font-medium tracking-wide">
+              {testimonial.role} <span className={isActive ? "text-coral/80" : ""}>@ {testimonial.company}</span>
             </p>
           </div>
         </div>
 
-        {/* Decorative Elements */}
-        <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-coral/30 group-hover:bg-coral group-hover:scale-150 transition-all duration-300" />
-      </motion.div>
-    </motion.div>
+        {testimonial.rating && (
+          <div className="hidden sm:block">
+            <StarRating rating={testimonial.rating} />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -184,35 +177,28 @@ function TestimonialCard({ testimonial, index }: TestimonialCardProps) {
 // ============================================================================
 
 const defaultTestimonials: TestimonialsContent = {
-  title: 'Client Testimonials',
-  subtitle: 'What people say about working with me',
+  title: 'Client Sentiments',
+  subtitle: 'Partnering with visionary teams to build exceptional digital products.',
   items: [
     {
       name: 'Sarah Johnson',
-      role: 'Product Manager',
-      company: 'TechStart Inc.',
-      content: 'Exceptional work on our web application. Delivered on time with great attention to detail. The code quality was outstanding and communication throughout the project was excellent.',
+      role: 'VP Product',
+      company: 'TechStart',
+      content: 'Incredibly rare to find someone who deeply understands both the architecture and the aesthetic layer. Delivered ahead of schedule with zero compromises on quality.',
       rating: 5,
     },
     {
       name: 'Michael Chen',
-      role: 'CTO',
+      role: 'Founder',
       company: 'Digital Solutions',
-      content: 'Highly skilled developer with deep understanding of modern web technologies. Transformed our legacy system into a cutting-edge platform. Highly recommend for any complex project.',
+      content: 'Transformed our legacy monolithic system into a blazing fast, beautifully animated Next.js platform. Our user engagement shot up by 40% in the first month.',
       rating: 5,
     },
     {
       name: 'Emily Davis',
-      role: 'Founder',
-      company: 'Creative Studio',
-      content: 'Great communication throughout the project. The final result exceeded our expectations. True professional who knows how to deliver quality work while keeping clients informed at every step.',
-      rating: 5,
-    },
-    {
-      name: 'David Park',
       role: 'Engineering Lead',
       company: 'Innovate Labs',
-      content: 'Incredible problem-solving skills and attention to detail. Delivered a robust solution that has significantly improved our workflow. A pleasure to work with.',
+      content: 'A true professional. Outstanding problem-solving skills, highly communicative, and wrote some of the cleanest, most maintainable code I\'ve reviewed this year.',
       rating: 5,
     },
   ],
@@ -223,101 +209,111 @@ const defaultTestimonials: TestimonialsContent = {
 // ============================================================================
 
 export function Testimonials({ content = defaultTestimonials, className, id = 'testimonials' }: TestimonialsProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Auto rotate 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % content.items.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [content.items.length]);
+
   return (
-    <section id={id} className={cn('section relative bg-navy py-24 overflow-hidden', className)}>
+    <section id={id} className={cn('section relative bg-navy py-32 overflow-hidden', className)}>
       {/* Background Decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 right-0 w-96 h-96 bg-coral/5 rounded-full filter blur-3xl" />
-        <div className="absolute bottom-1/3 left-0 w-96 h-96 bg-steel/10 rounded-full filter blur-3xl" />
+        <div className="absolute top-[10%] left-[-10%] w-[500px] h-[500px] bg-coral/10 rounded-full blur-[120px] mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-steel/10 rounded-full blur-[120px] mix-blend-screen" />
       </div>
 
-      <div className="container relative z-10 px-4 md:px-6">
-        {/* Section Header */}
-        <motion.div
-          className="text-center mb-16 max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="inline-block py-1 px-3 rounded-full bg-coral/10 text-coral border border-coral/20 text-sm font-semibold tracking-wider uppercase mb-4">
-            Testimonials
-          </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-off-white mb-4 tracking-tight">
-            {content.title || 'Client Testimonials'}
-          </h2>
-          {content.subtitle && (
-            <p className="text-mist text-lg">
+      <div className="container relative z-10 px-4 md:px-6 max-w-7xl mx-auto">
+
+        <div className="flex flex-col lg:flex-row gap-16 lg:gap-8 items-center lg:items-stretch">
+          {/* Left Header Column */}
+          <motion.div
+            className="w-full lg:w-1/3 flex flex-col justify-center text-center lg:text-left"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.8, type: 'spring', damping: 20 }}
+          >
+            <span className="inline-block py-1.5 px-4 rounded-full bg-coral/10 text-coral border border-coral/20 text-sm font-semibold tracking-wider uppercase mb-6 self-center lg:self-start">
+              Endorsements
+            </span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-off-white mb-6 tracking-tight">
+              Trusted By Industry Leaders.
+            </h2>
+            <div className="w-16 h-1 bg-coral/50 mb-6 rounded-full mx-auto lg:mx-0" />
+            <p className="text-mist/80 text-lg font-light leading-relaxed mb-10">
               {content.subtitle}
             </p>
-          )}
-        </motion.div>
 
-        {/* Testimonials Grid - Desktop */}
-        <motion.div
-          className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
-        >
-          {content.items.map((testimonial, index) => (
-            <TestimonialCard key={`${testimonial.name}-${index}`} testimonial={testimonial} index={index} />
-          ))}
-        </motion.div>
-
-        {/* Testimonials Scroll - Mobile */}
-        <motion.div
-          className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 scrollbar-hide"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
-          variants={containerVariants}
-        >
-          {content.items.map((testimonial, index) => (
-            <div key={`${testimonial.name}-${index}`} className="snap-center shrink-0 w-[85vw] max-w-sm">
-              <TestimonialCard testimonial={testimonial} index={index} />
+            {/* Navigation Dots */}
+            <div className="flex justify-center lg:justify-start gap-3">
+              {content.items.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveIndex(idx)}
+                  className="group relative w-16 h-2 rounded-full overflow-hidden bg-white/10"
+                >
+                  <motion.div
+                    className="absolute inset-y-0 left-0 bg-coral rounded-full"
+                    initial={false}
+                    animate={{ width: activeIndex === idx ? "100%" : "0%" }}
+                    transition={{ duration: activeIndex === idx ? 6 : 0.3, ease: activeIndex === idx ? "linear" : "easeOut" }}
+                  />
+                </button>
+              ))}
             </div>
-          ))}
-        </motion.div>
+          </motion.div>
 
-        {/* Scroll Indicator - Mobile Only */}
-        <motion.div
-          className="md:hidden flex justify-center gap-2 mt-6"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-        >
-          {content.items.slice(0, 4).map((_, index) => (
-            <div
-              key={index}
-              className="w-2 h-2 rounded-full bg-mist/30"
-            />
-          ))}
-        </motion.div>
-
-        {/* CTA Section */}
-        <motion.div
-          className="mt-16 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <p className="text-mist/60 text-sm mb-4">
-            Want to share your experience? Let's work together!
-          </p>
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-coral text-off-white font-semibold hover:bg-coral/90 hover:shadow-lg hover:shadow-coral/30 hover:-translate-y-1 transition-all duration-300"
+          {/* Right Interactive Carousel */}
+          <motion.div
+            className="w-full lg:w-2/3 relative h-[500px] md:h-[450px]"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-50px' }}
           >
-            Start a Project
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </a>
-        </motion.div>
+            {/* Simulated Stack/Carousel */}
+            <div className="absolute inset-0 flex justify-center items-center">
+              {content.items.map((item, idx) => {
+                // Logic to position items relative to activeIndex
+                let offset = idx - activeIndex;
+                if (offset < -1) offset += content.items.length;
+                if (offset > 1) offset -= content.items.length;
+
+                // Only render adjacent ones and active
+                if (Math.abs(offset) > 1) return null;
+
+                const isActive = offset === 0;
+
+                return (
+                  <motion.div
+                    key={idx}
+                    className="absolute inset-0 w-full lg:max-w-2xl mx-auto"
+                    initial={false}
+                    animate={{
+                      x: offset * 40,
+                      y: Math.abs(offset) * 20,
+                      scale: isActive ? 1 : 0.9,
+                      zIndex: isActive ? 10 : 0,
+                      opacity: isActive ? 1 : 0.5
+                    }}
+                    transition={{ type: "spring" as const, stiffness: 100, damping: 20 }}
+                  >
+                    <TestimonialCard
+                      testimonial={item}
+                      isActive={isActive}
+                      onClick={() => setActiveIndex(idx)}
+                    />
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

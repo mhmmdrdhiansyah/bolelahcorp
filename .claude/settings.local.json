@@ -19,7 +19,10 @@
       "Bash(rm:*)",
       "Bash(npx next:*)",
       "Bash(curl:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(mv portfolios:*)"
     ]
   }
 }

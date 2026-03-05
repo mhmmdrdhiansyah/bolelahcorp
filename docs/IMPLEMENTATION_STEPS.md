@@ -734,24 +734,34 @@ Password: admin123
 
 ---
 
-### Step 3.5: Create Portfolio Management Page
+### Step 3.5: Create Portfolio Management Page ✅
 
 **Estimated Time:** 2 hours
 
+**Status:** COMPLETED (2026-03-05)
+
 **Tasks:**
-- [ ] Create `app/(admin)/portfolios/page.tsx`:
+- [x] Create `app/admin/portfolios/page.tsx`:
   - Add "Add New Portfolio" button
   - Fetch portfolios from API
   - Display portfolios in table or grid
   - Each portfolio item:
     - Edit button
     - Delete button (with confirmation modal)
-    - Toggle publish button
-- [ ] Add search/filter (optional)
-- [ ] Add loading state
-- [ ] Test create, edit, delete, toggle publish workflows
+    - Toggle featured button
+- [x] Add search/filter by title, slug, and technologies
+- [x] Add loading state with skeleton
+- [x] Test create, edit, delete, toggle featured workflows
 
 **Deliverable:** Portfolio management page
+
+**Files Created:**
+- `app/admin/portfolios/page.tsx` - List page with Suspense
+- `app/admin/portfolios/new/page.tsx` - Create new portfolio page
+- `app/admin/portfolios/[id]/edit/page.tsx` - Edit existing portfolio page
+- `components/admin/PortfolioList.tsx` - Client component for list and actions
+- `components/admin/PortfolioListSkeleton.tsx` - Loading skeleton
+- `components/admin/ConfirmDialog.tsx` - Reusable confirmation modal
 
 ---
 

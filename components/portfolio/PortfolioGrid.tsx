@@ -1,10 +1,11 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import type { Portfolio as PortfolioType } from '@/types';
 import { PortfolioCard } from './PortfolioCard';
+import Link from 'next/link';
 
 // ============================================================================
 // Types
@@ -18,174 +19,150 @@ interface PortfolioGridProps {
 }
 
 // ============================================================================
-// Portfolio Slider Component (Animated with Framer Motion)
+// Animation Variants
 // ============================================================================
 
-export function PortfolioGrid({ portfolios, className }: PortfolioGridProps) {
-  // Limit to maximum 5 portfolios
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+// ============================================================================
+// Portfolio Grid Component (Masonry-like layout)
+// ============================================================================
+
+export function PortfolioGrid({ portfolios, className, showViewAll = true, viewAllLink = '/portfolio' }: PortfolioGridProps) {
+  // Use first 5 portfolios
   const displayPortfolios = (portfolios || []).slice(0, 5);
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-
-  // Auto-play functionality
-  useEffect(() => {
-    if (displayPortfolios.length <= 1 || isHovered) return;
-
-    const timer = setInterval(() => {
-      paginate(1);
-    }, 5000); // Ganti slide setiap 5 detik
-
-    return () => clearInterval(timer);
-  }, [currentIndex, isHovered, displayPortfolios.length]);
-
-  const paginate = (newDirection: number) => {
-    setDirection(newDirection);
-    setCurrentIndex((prevIndex) => {
-      let nextIndex = prevIndex + newDirection;
-      if (nextIndex < 0) nextIndex = displayPortfolios.length - 1;
-      if (nextIndex >= displayPortfolios.length) nextIndex = 0;
-      return nextIndex;
-    });
-  };
 
   if (displayPortfolios.length === 0) {
     return null;
   }
 
-  // Animasi untuk slider framer-motion
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-      scale: 0.9,
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      transition: {
-        x: { type: "spring", stiffness: 300, damping: 30 },
-        opacity: { duration: 0.2 },
-        scale: { duration: 0.4 },
-      }
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
-      scale: 0.9,
-      transition: {
-        x: { type: "spring", stiffness: 300, damping: 30 },
-        opacity: { duration: 0.2 },
-        scale: { duration: 0.4 },
-      }
-    }),
-  };
-
   return (
-    <section id="portfolio" className={cn('section relative bg-navy/50 py-24 overflow-hidden', className)}>
-      <div className="container px-4 md:px-6 relative">
+    <section id="portfolio" className={cn('section relative bg-navy py-32 overflow-hidden', className)}>
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[20%] right-[-5%] w-[600px] h-[600px] bg-coral/10 rounded-full blur-[120px] mix-blend-screen" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-steel/10 rounded-full blur-[120px] mix-blend-screen" />
+      </div>
+
+      <div className="container px-4 md:px-6 relative z-10 w-full max-w-7xl mx-auto">
 
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-20 gap-8">
           <motion.div
             className="max-w-2xl"
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.8, type: 'spring', damping: 20 }}
           >
-            <span className="inline-block py-1 px-3 rounded-full bg-coral/10 text-coral border border-coral/20 text-sm font-semibold tracking-wider uppercase mb-4">
-              Portfolio
+            <span className="inline-block py-1.5 px-4 rounded-full bg-coral/10 text-coral border border-coral/20 text-sm font-semibold tracking-wider uppercase mb-6">
+              Selected Works
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-off-white mb-4 tracking-tight">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-off-white mb-6 tracking-tight">
               Featured Projects
             </h2>
-            <p className="text-mist text-lg leading-relaxed">
-              A selection of my recent work and personal projects showcasing various technologies, creative solutions, and attention to detail.
+            <div className="w-16 h-1 bg-coral/50 mb-6 rounded-full" />
+            <p className="text-mist/90 text-lg md:text-xl font-light leading-relaxed">
+              A curated selection of my finest work, showcasing technical expertise, creative problem-solving, and attention to detail.
             </p>
           </motion.div>
 
-          {/* Navigation Controls */}
-          {displayPortfolios.length > 1 && (
+          {/* View All Button - Desktop */}
+          {showViewAll && displayPortfolios.length > 0 && (
             <motion.div
-              className="flex gap-3"
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              className="hidden md:block"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <button
-                onClick={() => paginate(-1)}
-                className="w-12 h-12 rounded-full flex items-center justify-center border bg-steel/40 border-mist/20 text-off-white hover:bg-coral hover:border-coral hover:text-white hover:scale-105 transition-all duration-300"
-                aria-label="Previous project"
+              <Link
+                href={viewAllLink}
+                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-white/5 border border-white/10 text-off-white hover:bg-white/10 transition-all duration-300"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                onClick={() => paginate(1)}
-                className="w-12 h-12 rounded-full flex items-center justify-center border bg-steel/40 border-mist/20 text-off-white hover:bg-coral hover:border-coral hover:text-white hover:scale-105 transition-all duration-300"
-                aria-label="Next project"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+                <span className="font-semibold tracking-wide">View Full Portfolio</span>
+                <span className="w-8 h-8 rounded-full bg-coral flex items-center justify-center group-hover:scale-110 group-hover:bg-coral-dark transition-all duration-300 shadow-lg shadow-coral/30">
+                  <svg className="w-4 h-4 text-white group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </Link>
             </motion.div>
           )}
         </div>
 
-        {/* Animated Slider Container */}
-        <div
-          className="relative w-full max-w-5xl mx-auto h-[450px]"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+        {/* Feature Grid Layout */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
         >
-          <AnimatePresence initial={false} custom={direction}>
-            {displayPortfolios.length > 0 && (
-              <motion.div
-                key={currentIndex}
-                custom={direction}
-                variants={slideVariants as any}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                className="absolute inset-0 w-full h-full"
-              >
-                <PortfolioCard
-                  portfolio={displayPortfolios[currentIndex] as any}
-                  index={0}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Navigation Indicators (Dots) */}
-        {displayPortfolios.length > 1 && (
-          <div className="flex justify-center gap-3 mt-8">
-            {displayPortfolios.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setDirection(index > currentIndex ? 1 : -1);
-                  setCurrentIndex(index);
-                }}
-                className={cn(
-                  "w-3 h-3 rounded-full transition-all duration-300",
-                  currentIndex === index
-                    ? "bg-coral scale-125"
-                    : "bg-mist/30 hover:bg-mist/60"
-                )}
-                aria-label={`Go to slide ${index + 1}`}
+          {/* Main large featured project (spans 2 columns on large screens) */}
+          {displayPortfolios[0] && (
+            <div className="lg:col-span-2 md:col-span-2 h-[500px] lg:h-[600px] group w-full">
+              <PortfolioCard
+                portfolio={displayPortfolios[0] as any}
+                index={0}
+                className="w-full h-full rounded-[2rem]"
               />
-            ))}
-          </div>
+            </div>
+          )}
+
+          {/* Second featured project */}
+          {displayPortfolios[1] && (
+            <div className="h-[500px] lg:h-[600px] w-full group">
+              <PortfolioCard
+                portfolio={displayPortfolios[1] as any}
+                index={1}
+                className="w-full h-full rounded-[2rem]"
+              />
+            </div>
+          )}
+
+          {/* Remaining projects in standard grid */}
+          {displayPortfolios.slice(2).map((portfolio, index) => (
+            <div key={portfolio.id || index} className="h-[400px] lg:h-[450px] w-full group">
+              <PortfolioCard
+                portfolio={portfolio as any}
+                index={index + 2}
+                className="w-full h-full rounded-3xl"
+              />
+            </div>
+          ))}
+        </motion.div>
+
+        {/* View All Button - Mobile Focus */}
+        {showViewAll && displayPortfolios.length > 0 && (
+          <motion.div
+            className="mt-12 md:hidden flex justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <Link
+              href={viewAllLink}
+              className="group w-full inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-white/5 border border-white/10 text-off-white hover:bg-white/10 active:scale-95 transition-all duration-300"
+            >
+              <span className="font-semibold tracking-wide">View Full Portfolio</span>
+              <span className="w-8 h-8 rounded-full bg-coral flex items-center justify-center">
+                <svg className="w-4 h-4 text-white group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                </svg>
+              </span>
+            </Link>
+          </motion.div>
         )}
 
       </div>
