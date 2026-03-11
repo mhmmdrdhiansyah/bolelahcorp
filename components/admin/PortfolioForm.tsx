@@ -14,6 +14,7 @@ import { Toggle } from '@/components/ui/Toggle';
 import { DatePicker } from '@/components/ui/DatePicker';
 import { Alert } from '@/components/ui/Alert';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { ImageUpload } from './ImageUpload';
 
 interface PortfolioFormProps {
   portfolio?: CreatePortfolioInput & { id?: string };
@@ -41,8 +42,9 @@ export function PortfolioForm({ portfolio, onSuccess }: PortfolioFormProps) {
   const router = useRouter();
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [imagesText, setImagesText] = useState('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
+  const additionalImageInputRef = useRef<HTMLInputElement>(null);
   const isEdit = !!portfolio?.id;
 
   const {
@@ -63,10 +65,8 @@ export function PortfolioForm({ portfolio, onSuccess }: PortfolioFormProps) {
   useEffect(() => {
     if (portfolio) {
       reset(portfolio);
-      setImagesText((portfolio.images || []).join('\n'));
     } else {
       reset(defaultFormValues);
-      setImagesText('');
     }
   }, [portfolio, reset]);
 
@@ -239,12 +239,11 @@ export function PortfolioForm({ portfolio, onSuccess }: PortfolioFormProps) {
         <CardContent className="space-y-4">
           {/* Cover Image */}
           <div>
-            <Label htmlFor="coverImage">Cover Image URL *</Label>
-            <Input
-              id="coverImage"
-              type="url"
-              placeholder="https://example.com/image.jpg"
-              {...register('coverImage')}
+            <ImageUpload
+              label="Cover Image *"
+              value={watch('coverImage')}
+              onChange={(url) => setValue('coverImage', url)}
+              onRemove={() => setValue('coverImage', '')}
               disabled={isLoading}
             />
             {formErrors.coverImage && (
@@ -255,22 +254,114 @@ export function PortfolioForm({ portfolio, onSuccess }: PortfolioFormProps) {
           {/* Additional Images */}
           <div>
             <Label>Additional Images</Label>
-            <p className="text-mist/50 text-xs mb-2">Enter one URL per line</p>
-            <Textarea
-              placeholder="https://example.com/img1.jpg&#10;https://example.com/img2.jpg"
-              rows={3}
-              value={imagesText}
-              onChange={(e) => {
-                const text = e.target.value;
-                setImagesText(text);
-                const urls = text
-                  .split('\n')
-                  .filter(url => url.trim())
-                  .map(url => url.trim());
-                setValue('images', urls);
-              }}
-              disabled={isLoading}
-            />
+            <p className="text-mist/50 text-xs mb-2">Upload multiple images (max 1MB each)</p>
+
+            {/* Images Grid */}
+            {(watch('images') || []).length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                {(watch('images') || []).map((url, index) => (
+                  <div key={index} className="relative group">
+                    <div className="aspect-square rounded-lg overflow-hidden bg-white/10 border border-mist/20">
+                      <img
+                        src={url}
+                        alt={`Image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    {/* Remove Button */}
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        // Delete from server if it's an uploaded file
+                        if (url.startsWith('/uploads/')) {
+                          try {
+                            await fetch(`/api/admin/upload?url=${encodeURIComponent(url)}`, {
+                              method: 'DELETE',
+                            });
+                          } catch (err) {
+                            console.error('Failed to delete image:', err);
+                          }
+                        }
+                        // Remove from array
+                        const newImages = (watch('images') || []).filter((_, i) => i !== index);
+                        setValue('images', newImages);
+                      }}
+                      disabled={isLoading}
+                      className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-coral text-white opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                      title="Remove image"
+                    >
+                      🗑️
+                    </button>
+              </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add New Image Button */}
+            <div>
+              <input
+                ref={additionalImageInputRef}
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  // Validate file size (1MB)
+                  if (file.size > 1 * 1024 * 1024) {
+                    setErrors(['File size exceeds 1MB']);
+                    return;
+                  }
+
+                  // Validate file type
+                  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                  if (!allowedTypes.includes(file.type)) {
+                    setErrors(['Invalid file format. Allowed: JPG, PNG, GIF, WebP']);
+                    return;
+                  }
+
+                  setErrors([]);
+                  setIsUploadingImage(true);
+
+                  try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const response = await fetch('/api/admin/upload', {
+                      method: 'POST',
+                      body: formData,
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                      throw new Error(result.message || 'Upload failed');
+                    }
+
+                    const currentImages = watch('images') || [];
+                    setValue('images', [...currentImages, result.data.url]);
+                  } catch (err) {
+                    setErrors([err instanceof Error ? err.message : 'Failed to upload image']);
+                  } finally {
+                    setIsUploadingImage(false);
+                    if (additionalImageInputRef.current) {
+                      additionalImageInputRef.current.value = '';
+                    }
+                  }
+                }}
+                disabled={isUploadingImage || isLoading}
+                className="hidden"
+                id="additional-image-upload"
+              />
+              <button
+                type="button"
+                onClick={() => document.getElementById('additional-image-upload')?.click()}
+                disabled={isUploadingImage || isLoading}
+                className="w-full py-3 border-2 border-dashed border-mist/30 rounded-lg hover:border-coral text-mist hover:text-off-white transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isUploadingImage ? 'Uploading...' : <span>+ Add Image</span>}
+              </button>
+            </div>
           </div>
         </CardContent>
       </Card>

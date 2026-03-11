@@ -72,3 +72,6 @@ yarn-error.log*
 # Temporary files
 *.tmp
 *.temp
+
+# Uploads (user uploaded images)
+/public/uploads/

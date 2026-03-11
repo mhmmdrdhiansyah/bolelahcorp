@@ -24,20 +24,21 @@ const jetbrainsMono = JetBrains_Mono({
 // ============================================================================
 
 export const metadata: Metadata = {
-  title: "Bolehah Corp - Portfolio & Blog",
-  description: "Professional portfolio and tech blog by Muhammad Ardhiansyah",
-  keywords: ["portfolio", "blog", "web development", "full-stack developer"],
-  authors: [{ name: "Muhammad Ardhiansyah" }],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  title: "Bolehah Corp - IT Solutions & Web Development",
+  description: "Professional IT services company specializing in WordPress, PHP, Next.js, and full-stack web development with 5+ years of experience.",
+  keywords: ["web development", "IT services", "WordPress", "PHP", "Next.js", "full-stack", "Bolehah Corp"],
+  authors: [{ name: "Bolehah Corp" }],
   openGraph: {
-    title: "Bolehah Corp - Portfolio & Blog",
-    description: "Professional portfolio and tech blog by Muhammad Ardhiansyah",
+    title: "Bolehah Corp - IT Solutions & Web Development",
+    description: "Professional IT services company specializing in WordPress, PHP, Next.js, and full-stack web development with 5+ years of experience.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bolehah Corp - Portfolio & Blog",
-    description: "Professional portfolio and tech blog by Muhammad Ardhiansyah",
+    title: "Bolehah Corp - IT Solutions & Web Development",
+    description: "Professional IT services company specializing in WordPress, PHP, Next.js, and full-stack web development with 5+ years of experience.",
   },
 };
 

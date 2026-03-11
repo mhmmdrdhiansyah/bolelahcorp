@@ -23,6 +23,7 @@ export interface Portfolio {
   githubUrl: string | null;
   featured: boolean;
   order: number;
+  views?: number;
 }
 
 interface PortfolioCardProps {

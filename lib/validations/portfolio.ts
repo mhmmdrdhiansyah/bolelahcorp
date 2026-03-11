@@ -4,21 +4,42 @@ import { z } from 'zod';
 // Portfolio Validation Schemas
 // ============================================================================
 
-// Helper for optional URL fields (accepts undefined, null, or empty string)
-const optionalUrl = () => z.string().url().optional().or(z.literal('')).or(z.literal(null)).transform(val => val === '' || val === null ? undefined : val);
+// Helper for image URL/Path validation (accepts both URLs and relative paths)
+const imagePathSchema = (fieldName = 'Image') =>
+  z.string().min(1, `${fieldName} is required`).refine(
+    (val) => {
+      // Accept: http://, https://, or / (relative path)
+      return val.startsWith('http://') ||
+             val.startsWith('https://') ||
+             val.startsWith('/');
+    },
+    `${fieldName} must be a valid URL or path`
+  );
+
+// Helper for optional URL fields (accepts http/https URLs only)
+const optionalUrl = () =>
+  z.string().url().optional().or(z.literal('')).or(z.literal(null))
+    .transform(val => (val === '' || val === null ? undefined : val));
 
 // Helper for optional string fields (accepts undefined, null, or empty string)
-const optionalString = () => z.string().optional().or(z.literal('')).transform(val => val === '' ? undefined : val);
+const optionalString = () =>
+  z.string().optional().or(z.literal(''))
+    .transform(val => (val === '' ? undefined : val));
+
+// Helper for array of image URLs/paths
+const imagesArraySchema = z.array(imagePathSchema('Image'))
+  .optional()
+  .transform(val => val || []);
 
 const portfolioBaseSchema = {
   // Required fields
   title: z.string().min(3, 'Title must be at least 3 characters'),
   slug: z.string().regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
-  coverImage: z.string().url('Cover image must be a valid URL'),
+  coverImage: imagePathSchema('Cover image'),
   technologies: z.array(z.string().min(1)).min(1, 'At least one technology is required'),
   // Images - optional, defaults to empty array
-  images: z.array(z.string().url()).optional().transform(val => val || []),
+  images: imagesArraySchema,
   featured: z.boolean().default(false),
   order: z.number().int().min(0).default(0),
   // Optional fields
@@ -41,8 +62,8 @@ export const updatePortfolioSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens').optional(),
   description: z.string().min(10, 'Description must be at least 10 characters').optional(),
   shortDesc: z.string().optional(),
-  coverImage: z.string().url('Cover image must be a valid URL').optional(),
-  images: z.array(z.string().url()).optional(),
+  coverImage: imagePathSchema('Cover image').optional(),
+  images: z.array(imagePathSchema('Image')).optional(),
   technologies: z.array(z.string().min(1)).optional(),
   projectUrl: z.string().url().optional().or(z.literal('')).optional(),
   githubUrl: z.string().url().optional().or(z.literal('')).optional(),

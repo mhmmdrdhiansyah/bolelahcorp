@@ -169,23 +169,23 @@ const defaultServices: ServicesContent = {
   items: [
     {
       icon: 'code',
-      title: 'Full-Stack Dev',
+      title: 'Fullstack Development',
       description: 'Architecting scalable applications with Next.js, React, and robust Node.js backends. Focus on clean code and performance.',
     },
     {
-      icon: 'palette',
-      title: 'UI/UX Design',
-      description: 'Crafting pixel-perfect, accessible, and highly interactive user interfaces using modern design systems and animations.',
+      icon: 'server',
+      title: 'System Admin',
+      description: 'Expert Linux server administration, security hardening, and server management for optimal uptime and performance.',
     },
     {
       icon: 'database',
-      title: 'Data Architecture',
-      description: 'Designing secure, normalized database schemas with PostgreSQL/MySQL and integrating ORMs like Prisma.',
+      title: 'DevOps Development',
+      description: 'Building CI/CD pipelines, Docker containerization, and automated deployment systems for streamlined development workflows.',
     },
     {
-      icon: 'server',
-      title: 'API Engineering',
-      description: 'Building secure RESTful and GraphQL APIs with comprehensive documentation, type-safety, and rate limiting.',
+      icon: 'palette',
+      title: 'Performance Optimization',
+      description: 'Analyzing and optimizing application performance, database queries, and frontend load times for exceptional user experience.',
     },
   ],
 };

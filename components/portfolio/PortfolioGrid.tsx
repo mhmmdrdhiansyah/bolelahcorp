@@ -41,10 +41,6 @@ export function PortfolioGrid({ portfolios, className, showViewAll = true, viewA
   // Use first 5 portfolios
   const displayPortfolios = (portfolios || []).slice(0, 5);
 
-  if (displayPortfolios.length === 0) {
-    return null;
-  }
-
   return (
     <section id="portfolio" className={cn('section relative bg-navy py-32 overflow-hidden', className)}>
       {/* Dynamic Background */}
@@ -77,7 +73,7 @@ export function PortfolioGrid({ portfolios, className, showViewAll = true, viewA
           </motion.div>
 
           {/* View All Button - Desktop */}
-          {showViewAll && displayPortfolios.length > 0 && (
+          {showViewAll && (
             <motion.div
               className="hidden md:block"
               initial={{ opacity: 0, y: 20 }}
@@ -101,49 +97,66 @@ export function PortfolioGrid({ portfolios, className, showViewAll = true, viewA
         </div>
 
         {/* Feature Grid Layout */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          {/* Main large featured project (spans 2 columns on large screens) */}
-          {displayPortfolios[0] && (
-            <div className="lg:col-span-2 md:col-span-2 h-[500px] lg:h-[600px] group w-full">
-              <PortfolioCard
-                portfolio={displayPortfolios[0] as any}
-                index={0}
-                className="w-full h-full rounded-[2rem]"
-              />
-            </div>
-          )}
+        {displayPortfolios.length > 0 ? (
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            {/* Main large featured project (spans 2 columns on large screens) */}
+            {displayPortfolios[0] && (
+              <div className="lg:col-span-2 md:col-span-2 h-[500px] lg:h-[600px] group w-full">
+                <PortfolioCard
+                  portfolio={displayPortfolios[0] as any}
+                  index={0}
+                  className="w-full h-full rounded-[2rem]"
+                />
+              </div>
+            )}
 
-          {/* Second featured project */}
-          {displayPortfolios[1] && (
-            <div className="h-[500px] lg:h-[600px] w-full group">
-              <PortfolioCard
-                portfolio={displayPortfolios[1] as any}
-                index={1}
-                className="w-full h-full rounded-[2rem]"
-              />
-            </div>
-          )}
+            {/* Second featured project */}
+            {displayPortfolios[1] && (
+              <div className="h-[500px] lg:h-[600px] w-full group">
+                <PortfolioCard
+                  portfolio={displayPortfolios[1] as any}
+                  index={1}
+                  className="w-full h-full rounded-[2rem]"
+                />
+              </div>
+            )}
 
-          {/* Remaining projects in standard grid */}
-          {displayPortfolios.slice(2).map((portfolio, index) => (
-            <div key={portfolio.id || index} className="h-[400px] lg:h-[450px] w-full group">
-              <PortfolioCard
-                portfolio={portfolio as any}
-                index={index + 2}
-                className="w-full h-full rounded-3xl"
-              />
+            {/* Remaining projects in standard grid */}
+            {displayPortfolios.slice(2).map((portfolio, index) => (
+              <div key={portfolio.id || index} className="h-[400px] lg:h-[450px] w-full group">
+                <PortfolioCard
+                  portfolio={portfolio as any}
+                  index={index + 2}
+                  className="w-full h-full rounded-3xl"
+                />
+              </div>
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center py-20"
+          >
+            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-white/5 flex items-center justify-center">
+              <svg className="w-12 h-12 text-mist/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
             </div>
-          ))}
-        </motion.div>
+            <h3 className="text-2xl font-semibold text-off-white mb-2">No Projects Yet</h3>
+            <p className="text-mist/60 max-w-md mx-auto">Check back soon to see our latest work and featured projects.</p>
+          </motion.div>
+        )}
 
         {/* View All Button - Mobile Focus */}
-        {showViewAll && displayPortfolios.length > 0 && (
+        {showViewAll && (
           <motion.div
             className="mt-12 md:hidden flex justify-center"
             initial={{ opacity: 0, y: 20 }}

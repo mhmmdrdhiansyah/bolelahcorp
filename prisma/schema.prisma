@@ -163,6 +163,9 @@ model Portfolio {
   metaTitle       String? @map("meta_title") @db.VarChar(255)
   metaDescription String? @map("meta_description") @db.Text
 
+  // Stats
+  views Int @default(0)
+
   // Timestamps
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

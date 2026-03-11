@@ -14,7 +14,7 @@ interface AdminPageLayoutProps {
 function getPageTitle(pathname: string): string {
   if (pathname === '/admin') return 'Dashboard';
   if (pathname.startsWith('/admin/portfolios')) return 'Portfolios';
-  if (pathname.startsWith('/admin/posts')) return 'Blog Posts';
+  if (pathname.startsWith('/admin/blog')) return 'Blog Posts';
   if (pathname.startsWith('/admin/pages')) return 'Page Sections';
   if (pathname.startsWith('/admin/settings')) return 'Settings';
   return 'Admin';

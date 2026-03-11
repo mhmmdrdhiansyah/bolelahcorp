@@ -81,7 +81,7 @@ export function BlogList({ posts, className, limit = 3 }: BlogListProps) {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <Link
-              href="/blog"
+              href="/journal"
               className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-coral/10 border border-coral/20 text-coral hover:bg-coral hover:text-white transition-all duration-300"
             >
               <span className="font-semibold tracking-wide">Journal Archive</span>
@@ -116,7 +116,7 @@ export function BlogList({ posts, className, limit = 3 }: BlogListProps) {
           transition={{ duration: 0.5 }}
         >
           <Link
-            href="/blog"
+            href="/journal"
             className="group w-full inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-coral/10 border border-coral/20 text-coral hover:bg-coral hover:text-white transition-all duration-300"
           >
             <span className="font-semibold tracking-wide">Journal Archive</span>

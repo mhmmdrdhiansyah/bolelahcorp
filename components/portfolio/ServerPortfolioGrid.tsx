@@ -29,6 +29,7 @@ async function getPortfolios() {
         featured: true,
         order: true,
         completedAt: true,
+        views: true,
         createdAt: true,
         updatedAt: true,
         authorId: true,

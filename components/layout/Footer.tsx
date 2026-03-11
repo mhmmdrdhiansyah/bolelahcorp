@@ -57,11 +57,11 @@ const socialIcons = {
 };
 
 const socialLinks: SocialLink[] = [
-  { name: 'GitHub', href: 'https://github.com/ardhiansyah', icon: socialIcons.github },
-  { name: 'LinkedIn', href: 'https://linkedin.com/in/ardhiansyah', icon: socialIcons.linkedin },
-  { name: 'Twitter', href: 'https://twitter.com/ardhiansyah', icon: socialIcons.twitter },
-  { name: 'Instagram', href: 'https://instagram.com/ardhiansyah', icon: socialIcons.instagram },
-  { name: 'Email', href: 'mailto:contact@bolelahcorp.com', icon: socialIcons.email },
+  { name: 'GitHub', href: 'https://github.com/bolelahcorp', icon: socialIcons.github },
+  { name: 'LinkedIn', href: 'https://linkedin.com/company/bolelahcorp', icon: socialIcons.linkedin },
+  { name: 'Twitter', href: 'https://twitter.com/bolelahcorp', icon: socialIcons.twitter },
+  { name: 'Instagram', href: 'https://instagram.com/bolelahcorp', icon: socialIcons.instagram },
+  { name: 'Email', href: 'mailto:hello@bolelahcorp.com', icon: socialIcons.email },
 ];
 
 const defaultQuickLinks: QuickLink[] = [

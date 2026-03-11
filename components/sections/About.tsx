@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useRef, useState } from 'react';
@@ -9,12 +9,14 @@ import { useRef, useState } from 'react';
 // Types
 // ============================================================================
 
-export interface AboutContent {
+export interface CompanyInfo {
   name: string;
-  role: string;
-  bio: string;
-  skills: string[];
-  avatar: string;
+  tagline: string;
+  description: string;
+  foundedYear: number;
+  experience: string;
+  services: string[];
+  technologies: string[];
 }
 
 export interface SocialLinks {
@@ -26,7 +28,7 @@ export interface SocialLinks {
 }
 
 interface AboutProps {
-  content?: AboutContent;
+  content?: CompanyInfo;
   socialLinks?: SocialLinks;
   className?: string;
   id?: string;
@@ -116,6 +118,71 @@ const socialIcons = {
 };
 
 // ============================================================================
+// Experience Badge Component
+// ============================================================================
+
+interface ExperienceBadgeProps {
+  years: string;
+  label: string;
+}
+
+function ExperienceBadge({ years, label }: ExperienceBadgeProps) {
+  return (
+    <motion.div
+      className="relative inline-flex items-center gap-4 px-6 py-4 rounded-2xl bg-gradient-to-r from-coral/20 to-steel/20 backdrop-blur-xl border border-white/10 shadow-xl"
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, type: 'spring' }}
+    >
+      <div className="flex items-baseline gap-1">
+        <span className="text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-coral to-coral/60">
+          {years}
+        </span>
+        <span className="text-2xl text-coral font-semibold">+</span>
+      </div>
+      <div className="text-left">
+        <p className="text-off-white font-semibold text-lg">{label}</p>
+        <p className="text-mist/60 text-sm">Of Excellence</p>
+      </div>
+    </motion.div>
+  );
+}
+
+// ============================================================================
+// Service Card Component
+// ============================================================================
+
+interface ServiceCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  index: number;
+}
+
+function ServiceCard({ icon, title, description, index }: ServiceCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+      className="group relative p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-300"
+    >
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-coral/20 flex items-center justify-center text-coral">
+          {icon}
+        </div>
+        <div>
+          <h4 className="text-off-white font-semibold mb-2">{title}</h4>
+          <p className="text-mist/70 text-sm leading-relaxed">{description}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ============================================================================
 // Main Component (Client Component)
 // ============================================================================
 
@@ -126,27 +193,44 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
     offset: ["start end", "end start"]
   });
 
-  const avatarY = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const avatarRotate = useTransform(scrollYProgress, [0, 1], [-5, 5]);
+  const logoY = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
-  // Default content
-  const defaultContent: AboutContent = {
-    name: 'Muhammad Ardhiansyah',
-    role: 'Full-Stack Developer',
-    bio: 'Passionate developer with 5+ years of experience in building modern web applications. Love turning ideas into reality through clean code and creative solutions.',
-    skills: ['React', 'Next.js', 'Node.js', 'TypeScript', 'Prisma', 'MySQL', 'Tailwind CSS', 'Framer Motion'],
-    avatar: '/images/avatar.jpg',
+  // Default company content
+  const defaultContent: CompanyInfo = {
+    name: 'Bolehah Corp',
+    tagline: 'Your Trusted Technology Partner',
+    description: 'Bolehah Corp is an IT company with over 5 years of experience in delivering innovative digital solutions. We specialize in building modern web applications using cutting-edge technologies like WordPress, PHP, and Next.js. Our team of full-stack developers creates robust, scalable, and high-performance websites and admin systems tailored to your business needs.',
+    foundedYear: 2020,
+    experience: '5',
+    services: [
+      'Custom Website Development',
+      'Admin Panel & Dashboard',
+      'System Architecture & Integration',
+      'Performance Optimization',
+    ],
+    technologies: [
+      'WordPress',
+      'PHP',
+      'Next.js',
+      'React',
+      'Node.js',
+      'MySQL',
+      'PostgreSQL',
+      'Linux',
+      'Docker',
+      'Git',
+      'TypeScript',
+      'Tailwind CSS',
+      'REST API',
+      'DevOps',
+    ],
   };
 
   const defaultSocialLinks: SocialLinks = {
-    github: 'https://github.com/ardhiansyah',
-    linkedin: 'https://linkedin.com/in/ardhiansyah',
-    twitter: 'https://twitter.com/ardhiansyah',
-    instagram: 'https://instagram.com/ardhiansyah',
-    email: 'mailto:contact@bolelahcorp.com',
+    instagram: 'https://instagram.com/bolelahcorp',
   };
 
-  const aboutContent = content || defaultContent;
+  const companyContent = content || defaultContent;
   const social = socialLinks || defaultSocialLinks;
 
   return (
@@ -155,6 +239,12 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
       id={id}
       className={cn('section relative py-32 bg-navy', className)}
     >
+      {/* Background Decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-steel/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[400px] h-[400px] bg-coral/10 rounded-full blur-[100px]" />
+      </div>
+
       <motion.div
         className="container px-4 sm:px-6 z-10 relative"
         variants={containerVariants}
@@ -164,56 +254,51 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
       >
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
-          {/* Left: Avatar & Displays */}
+          {/* Left: Company Logo & Experience Badge */}
           <motion.div variants={itemVariants} className="lg:col-span-5 relative">
             <motion.div
               className="relative mx-auto lg:mx-0 w-72 h-72 sm:w-96 sm:h-96"
-              style={{ y: avatarY, rotate: avatarRotate }}
+              style={{ y: logoY }}
             >
-              {/* Background Decorations */}
+              {/* Background Glow */}
               <motion.div
-                className="absolute inset-0 rounded-[2rem] bg-gradient-to-tr from-coral to-mist opacity-30 blur-[40px] mix-blend-screen"
+                className="absolute inset-0 rounded-[2rem] bg-gradient-to-tr from-coral to-mist opacity-20 blur-[60px]"
                 animate={{
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 5, -5, 0],
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 90, 180, 270, 360],
                 }}
                 transition={{
-                  duration: 8,
+                  duration: 20,
                   repeat: Infinity,
-                  ease: "easeInOut",
+                  ease: "linear",
                 }}
               />
 
-              {/* Avatar Image Frame */}
-              <div
-                className="relative h-full w-full rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.3)] bg-navy/80 backdrop-blur-md group"
-              >
-                {/* Glow Follow Effect (Pseudo) */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />
-
-                {/* Placeholder for avatar */}
-                <div className="w-full h-full bg-gradient-to-br from-steel/20 to-navy flex items-center justify-center relative overflow-hidden">
-                  {/* Abstract Lines */}
-                  <div className="absolute inset-0 opacity-20 bg-[url('/grid.svg')] bg-center bg-cover mix-blend-overlay" />
+              {/* Company Logo Frame */}
+              <div className="relative h-full w-full rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.3)] bg-navy/80 backdrop-blur-md">
+                <div className="w-full h-full bg-gradient-to-br from-steel/30 to-navy flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-20 bg-[url('/grid.svg')] bg-center bg-cover" />
 
                   <motion.div
                     className="text-center z-10"
-                    whileHover={{ scale: 1.1 }}
+                    whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring" as const, stiffness: 200, damping: 10 }}
                   >
-                    <div className="text-8xl lg:text-9xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-coral to-coral/50 mb-2 drop-shadow-xl">
-                      {aboutContent.name.split(' ').map(n => n[0]).join('')}
+                    <div className="text-6xl lg:text-7xl font-black bg-clip-text text-transparent bg-gradient-to-b from-coral to-coral/50 mb-2">
+                      BC
                     </div>
-                    <div className="text-mist/60 text-sm uppercase tracking-widest font-semibold">Avatar / Photo</div>
+                    <div className="text-mist/80 text-sm uppercase tracking-widest font-semibold">
+                      Bolehah Corp
+                    </div>
                   </motion.div>
                 </div>
               </div>
 
-              {/* Status Badge - Floating */}
+              {/* Experience Badge */}
               <motion.div
-                className="absolute -bottom-6 -right-6 lg:-bottom-8 lg:-right-10 px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-off-white text-sm font-semibold shadow-2xl z-20"
+                className="absolute -bottom-4 -right-4 lg:-bottom-6 lg:-right-6 z-20"
                 animate={{
-                  y: [-5, 5, -5],
+                  y: [-3, 3, -3],
                 }}
                 transition={{
                   duration: 4,
@@ -221,26 +306,20 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
                   ease: 'easeInOut',
                 }}
               >
-                <span className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                  Available for work
-                </span>
+                <ExperienceBadge years={companyContent.experience} label="Years Experience" />
               </motion.div>
             </motion.div>
 
-            {/* Social Links - Mobile First */}
+            {/* Social Links - Mobile */}
             <motion.div
               className="mt-16 flex justify-center gap-4 lg:hidden relative z-20"
               variants={itemVariants}
             >
-              {social.github && <SocialLink href={social.github} label="GitHub" icon={socialIcons.github} />}
-              {social.linkedin && <SocialLink href={social.linkedin} label="LinkedIn" icon={socialIcons.linkedin} />}
-              {social.twitter && <SocialLink href={social.twitter} label="Twitter" icon={socialIcons.twitter} />}
               {social.instagram && <SocialLink href={social.instagram} label="Instagram" icon={socialIcons.instagram} />}
             </motion.div>
           </motion.div>
 
-          {/* Right: Info & Skills */}
+          {/* Right: Company Info */}
           <motion.div
             variants={itemVariants}
             className="lg:col-span-7 text-center lg:text-left pt-10 lg:pt-0"
@@ -251,54 +330,102 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-coral/10 border border-coral/20 text-coral text-sm font-semibold tracking-wider uppercase mb-6"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-coral" />
-              About Me
+              About Us
             </motion.div>
 
-            {/* Name */}
+            {/* Company Name */}
             <motion.h2
               variants={itemVariants}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-off-white mb-4 tracking-tight"
             >
-              {aboutContent.name}
+              {companyContent.name}
             </motion.h2>
 
-            {/* Role */}
+            {/* Tagline */}
             <motion.h3
               variants={itemVariants}
-              className="text-2xl lg:text-3xl text-gradient bg-gradient-to-r from-mist to-steel bg-clip-text text-transparent font-medium mb-8"
+              className="text-2xl lg:text-3xl text-gradient bg-gradient-to-r from-mist to-steel bg-clip-text text-transparent font-medium mb-6"
             >
-              {aboutContent.role}
+              {companyContent.tagline}
             </motion.h3>
 
-            {/* Bio */}
+            {/* Description */}
             <motion.p
               variants={itemVariants}
               className="text-lg text-mist/80 leading-relaxed mb-10 max-w-2xl mx-auto lg:mx-0 font-light"
             >
-              {aboutContent.bio}
+              {companyContent.description}
             </motion.p>
 
-            {/* Skills */}
+            {/* Services Cards */}
+            <motion.div variants={itemVariants} className="mb-10">
+              <h4 className="text-sm font-semibold text-mist/50 uppercase tracking-[0.2em] mb-4">
+                What We Do
+              </h4>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <ServiceCard
+                  index={0}
+                  icon={
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                  }
+                  title="Full-Stack Development"
+                  description="WordPress, PHP & Next.js solutions"
+                />
+                <ServiceCard
+                  index={1}
+                  icon={
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  }
+                  title="Admin Systems"
+                  description="Custom dashboard & backend integration"
+                />
+                <ServiceCard
+                  index={2}
+                  icon={
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                    </svg>
+                  }
+                  title="DevOps & Deployment"
+                  description="Docker, Linux, CI/CD pipeline"
+                />
+                <ServiceCard
+                  index={3}
+                  icon={
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  }
+                  title="Performance Optimization"
+                  description="Speed & scalability experts"
+                />
+              </div>
+            </motion.div>
+
+            {/* Technologies */}
             <motion.div variants={itemVariants} className="mb-12">
               <h4 className="text-sm font-semibold text-mist/50 uppercase tracking-[0.2em] mb-4">
-                Core Stack & Technologies
+                Our Tech Stack
               </h4>
               <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start">
-                {aboutContent.skills.map((skill, index) => (
+                {(companyContent.technologies || []).map((tech, index) => (
                   <motion.div
-                    key={skill}
-                    className="relative group px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-mist text-sm font-medium hover:text-off-white transition-colors duration-300 overflow-hidden cursor-default"
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    key={tech}
+                    className="relative group px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-mist text-sm font-medium hover:text-off-white hover:border-coral/30 transition-all duration-300 cursor-default"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{
-                      delay: index * 0.05,
-                      duration: 0.4,
+                      delay: index * 0.03,
+                      duration: 0.3,
                     }}
-                    whileHover={{ y: -4 }}
+                    whileHover={{ y: -3 }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-coral/0 via-coral/10 to-coral/0 opacity-0 group-hover:opacity-100 group-hover:animate-[shimmer_1.5s_infinite] -translate-x-full transition-all duration-300" />
-                    <span className="relative z-10">{skill}</span>
+                    <span className="relative z-10">{tech}</span>
                   </motion.div>
                 ))}
               </div>
@@ -311,12 +438,12 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
             >
               {/* CTA Button */}
               <Link
-                href="/contact"
+                href="/#contact"
                 className="group relative inline-flex items-center gap-2 px-8 py-4 rounded-full bg-coral text-off-white font-semibold shadow-lg shadow-coral/20 hover:shadow-coral/40 transition-all duration-300 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                 <span className="relative z-10 flex items-center gap-2">
-                  Get In Touch
+                  Start Your Project
                   <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
@@ -325,11 +452,7 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
 
               {/* Social Links - Desktop Only */}
               <div className="hidden lg:flex gap-3">
-                {social.github && <SocialLink href={social.github} label="GitHub" icon={socialIcons.github} />}
-                {social.linkedin && <SocialLink href={social.linkedin} label="LinkedIn" icon={socialIcons.linkedin} />}
-                {social.twitter && <SocialLink href={social.twitter} label="Twitter" icon={socialIcons.twitter} />}
                 {social.instagram && <SocialLink href={social.instagram} label="Instagram" icon={socialIcons.instagram} />}
-                {social.email && <SocialLink href={social.email} label="Email" icon={socialIcons.email} />}
               </div>
             </motion.div>
           </motion.div>

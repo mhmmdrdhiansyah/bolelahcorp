@@ -107,6 +107,7 @@ export interface Portfolio {
   featured: boolean;
   order: number;
   completedAt: Date | null;
+  views: number;
   createdAt: Date;
   updatedAt: Date;
   authorId: string;

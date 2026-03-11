@@ -22,7 +22,16 @@
       "Bash(powershell:*)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
-      "Bash(mv portfolios:*)"
+      "Bash(mv portfolios:*)",
+      "Bash(cd D:/laragon/www/bolelahcorp && node -e \"\nconst { PrismaClient } = require\\('@prisma/client'\\);\nconst prisma = new PrismaClient\\(\\);\n\nconst newContent = {\n  name: 'Bolehah Corp',\n  tagline: 'Your Trusted Technology Partner',\n  description: 'Bolehah Corp is an IT company with over 5 years of experience in delivering innovative digital solutions. We specialize in building modern web applications using cutting-edge technologies like WordPress, PHP, and Next.js.',\n  foundedYear: 2020,\n  experience: '5',\n  services: ['Custom Website Development', 'Admin Panel & Dashboard', 'System Architecture & Integration', 'Performance Optimization'],\n  technologies: ['WordPress', 'PHP', 'Next.js', 'React', 'Node.js', 'MySQL', 'PostgreSQL', 'Linux', 'Docker', 'Git', 'TypeScript', 'Tailwind CSS', 'REST API', 'DevOps']\n};\n\nprisma.pageSection.update\\({\n  where: { \n    page_section: {\n      page: 'home',\n      section: 'about'\n    }\n  },\n  data: { \n    title: 'About Us',\n    content: newContent \n  }\n}\\)\n.then\\(\\(\\) => { console.log\\('Database updated successfully'\\); process.exit\\(0\\); }\\)\n.catch\\(err => { console.error\\('Error:', err\\); process.exit\\(1\\); }\\);\n\")",
+      "Bash(cd D:/laragon/www/bolelahcorp && node scripts/update-hero.js)",
+      "Bash(cd D:/laragon/www/bolelahcorp && node -e \"\nconst { PrismaClient } = require\\('@prisma/client'\\);\nconst prisma = new PrismaClient\\(\\);\n\nasync function checkData\\(\\) {\n  // Check services setting\n  const services = await prisma.siteSetting.findUnique\\({ where: { key: 'social_links' } }\\);\n  console.log\\('Social links:', services?.value\\);\n\n  process.exit\\(0\\);\n}\n\ncheckData\\(\\).catch\\(err => { console.error\\(err\\); process.exit\\(1\\); }\\);\n\")",
+      "Bash(cd D:/laragon/www/bolelahcorp && node scripts/update-social.js)",
+      "Bash(cd D:/laragon/www/bolelahcorp && node -e \"\nconst { PrismaClient } = require\\('@prisma/client'\\);\nconst prisma = new PrismaClient\\(\\);\n\nasync function checkUsers\\(\\) {\n  const users = await prisma.user.findMany\\({ select: { id: true, name: true, email: true } }\\);\n  console.log\\('Users:', users\\);\n  process.exit\\(0\\);\n}\n\ncheckUsers\\(\\).catch\\(err => { console.error\\(err\\); process.exit\\(1\\); }\\);\n\")",
+      "Bash(cd D:/laragon/www/bolelahcorp && node scripts/update-admin.js)",
+      "Bash(cd D:/laragon/www/bolelahcorp && rm scripts/*.js && npx next build 2>&1 | tail -20)",
+      "Bash(cd D:/laragon/www/bolelahcorp && rm -rf node_modules/.prisma && npx prisma generate --no-hints 2>&1)",
+      "Bash(cd D:/laragon/www/bolelahcorp && npx prisma db execute --stdin 2>&1 <<'SQL'\nSELECT * FROM page_sections WHERE section = 'testimonials';\nSQL)"
     ]
   }
 }

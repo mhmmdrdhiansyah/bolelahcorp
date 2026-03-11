@@ -11,12 +11,14 @@ export default async function AdminPage() {
     totalPortfolios,
     publishedPortfolios,
     totalPosts,
-    publishedPosts
+    publishedPosts,
+    unreadMessages
   ] = await Promise.all([
     prisma.portfolio.count(),
     prisma.portfolio.count({ where: { featured: true } }),
     prisma.post.count(),
     prisma.post.count({ where: { status: 'PUBLISHED' } }),
+    prisma.contactSubmission.count({ where: { read: false } }),
   ]);
 
   return (
@@ -38,13 +40,23 @@ export default async function AdminPage() {
       />
 
       {/* Quick Links */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <a href="/admin/messages" className="card card-hover block relative">
+          {unreadMessages > 0 && (
+            <span className="absolute -top-2 -right-2 w-6 h-6 bg-coral text-white text-xs font-bold rounded-full flex items-center justify-center">
+              {unreadMessages}
+            </span>
+          )}
+          <h3 className="font-bold text-off-white mb-1">✉️ Messages</h3>
+          <p className="text-mist text-sm">{unreadMessages > 0 ? `${unreadMessages} unread` : 'View contact messages'}</p>
+        </a>
+
         <a href="/admin/portfolios" className="card card-hover block">
           <h3 className="font-bold text-off-white mb-1">📁 Portfolios</h3>
           <p className="text-mist text-sm">Manage portfolio items</p>
         </a>
 
-        <a href="/admin/posts" className="card card-hover block">
+        <a href="/admin/blog" className="card card-hover block">
           <h3 className="font-bold text-off-white mb-1">📝 Blog Posts</h3>
           <p className="text-mist text-sm">Manage blog articles</p>
         </a>

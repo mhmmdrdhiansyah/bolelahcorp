@@ -8,3 +8,6 @@ export { PortfolioGrid } from './PortfolioGrid';
 
 // Server Portfolio Grid - Step 2.3 ✅
 export { ServerPortfolioGrid } from './ServerPortfolioGrid';
+
+// Portfolio Gallery - Detail page ✅
+export { PortfolioGallery } from './PortfolioGallery';

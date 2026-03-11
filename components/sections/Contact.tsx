@@ -129,15 +129,6 @@ export function Contact({ content = defaultContact, className, id = 'contact' }:
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
-    setTimeout(() => {
-      setSubmitStatus('success');
-      setSubmitMessage("Message sent elegantly! (Demo mode)");
-      reset();
-      setIsSubmitting(false);
-    }, 1500)
-
-    // Example actual code:
-    /*
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -161,7 +152,6 @@ export function Contact({ content = defaultContact, className, id = 'contact' }:
     } finally {
       setIsSubmitting(false);
     }
-    */
   };
 
   return (
@@ -231,17 +221,9 @@ export function Contact({ content = defaultContact, className, id = 'contact' }:
 
             {/* Socials */}
             <div className="flex gap-4">
-              <a href="#" className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-mist hover:text-white hover:border-coral hover:bg-coral/20 hover:-translate-y-2 transition-all duration-300 shadow-lg block relative overflow-hidden group">
-                <div className="absolute inset-0 bg-coral translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                <span className="relative z-10">{socialIcons.github}</span>
-              </a>
-              <a href="#" className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-mist hover:text-white hover:border-[#0077B5] hover:bg-[#0077B5]/20 hover:-translate-y-2 transition-all duration-300 shadow-lg block relative overflow-hidden group">
-                <div className="absolute inset-0 bg-[#0077B5] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                <span className="relative z-10">{socialIcons.linkedin}</span>
-              </a>
-              <a href="#" className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-mist hover:text-white hover:border-[#1DA1F2] hover:bg-[#1DA1F2]/20 hover:-translate-y-2 transition-all duration-300 shadow-lg block relative overflow-hidden group">
-                <div className="absolute inset-0 bg-[#1DA1F2] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                <span className="relative z-10">{socialIcons.twitter}</span>
+              <a href="https://instagram.com/bolelahcorp" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-mist hover:text-white hover:border-[#E4405F] hover:bg-[#E4405F]/20 hover:-translate-y-2 transition-all duration-300 shadow-lg block relative overflow-hidden group">
+                <div className="absolute inset-0 bg-[#E4405F] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                <span className="relative z-10">{socialIcons.instagram}</span>
               </a>
             </div>
           </motion.div>

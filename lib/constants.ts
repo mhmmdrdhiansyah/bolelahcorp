@@ -24,7 +24,7 @@ export const COLORS = {
 // ============================================================================
 
 export const SITE_NAME = 'Bolehah Corp';
-export const SITE_DESCRIPTION = 'Professional portfolio and tech blog by Muhammad Ardhiansyah';
+export const SITE_DESCRIPTION = 'Professional IT services company specializing in WordPress, PHP, Next.js, and full-stack web development with 5+ years of experience.';
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -41,7 +41,7 @@ export const APP_ROUTES = {
   ADMIN: '/admin',
   ADMIN_DASHBOARD: '/admin',
   ADMIN_PORTFOLIOS: '/admin/portfolios',
-  ADMIN_POSTS: '/admin/posts',
+  ADMIN_BLOG: '/admin/blog',
   ADMIN_PAGES: '/admin/pages',
   ADMIN_SETTINGS: '/admin/settings',
   ADMIN_LOGIN: '/admin/login',
