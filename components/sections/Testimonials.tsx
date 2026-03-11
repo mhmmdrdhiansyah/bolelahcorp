@@ -181,7 +181,7 @@ const defaultTestimonials: TestimonialsContent = {
   subtitle: 'Partnering with visionary teams to build exceptional digital products.',
   items: [
     {
-      name: 'Budi Santoso',
+      name: 'Dedi',
       role: 'Owner',
       company: 'Starprint',
       content: 'Bolehah Corp membuat sistem POS yang sangat membantu usaha percetakan saya. Transaksi jadi lebih cepat, stok terkontrol, dan laporan keuangan otomatis. Sangat direkomendasikan!',
