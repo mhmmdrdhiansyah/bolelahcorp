@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useRef, useState } from 'react';
 
@@ -276,20 +277,22 @@ export function About({ content, socialLinks, className, id = 'about' }: AboutPr
 
               {/* Company Logo Frame */}
               <div className="relative h-full w-full rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.3)] bg-navy/80 backdrop-blur-md">
-                <div className="w-full h-full bg-gradient-to-br from-steel/30 to-navy flex items-center justify-center relative overflow-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-steel/30 to-navy flex items-center justify-center relative overflow-hidden p-8">
                   <div className="absolute inset-0 opacity-20 bg-[url('/grid.svg')] bg-center bg-cover" />
 
                   <motion.div
-                    className="text-center z-10"
+                    className="relative z-10 w-full h-full flex items-center justify-center"
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring" as const, stiffness: 200, damping: 10 }}
                   >
-                    <div className="text-6xl lg:text-7xl font-black bg-clip-text text-transparent bg-gradient-to-b from-coral to-coral/50 mb-2">
-                      BC
-                    </div>
-                    <div className="text-mist/80 text-sm uppercase tracking-widest font-semibold">
-                      Bolehah Corp
-                    </div>
+                    <Image
+                      src="/images/static/Logo.png"
+                      alt="Bolehah Corp Logo"
+                      width={300}
+                      height={300}
+                      className="object-contain w-full h-full"
+                      priority
+                    />
                   </motion.div>
                 </div>
               </div>

@@ -1,0 +1,30 @@
+# Images Directory
+
+Struktur folder untuk menyimpan gambar di website Bolehah Corp.
+
+```
+images/
+├── static/       # Logo, icon, favicon, banner utama
+├── portfolios/   # Gambar portfolio/project
+├── services/     # Gambar untuk layanan/services
+├── testimonials/ # Foto pengguna testimoni
+├── team/         # Foto tim/team member
+└── blog/         # Gambar artikel blog
+```
+
+## Cara Menggunakan di Kode
+
+```tsx
+// Tag img biasa
+<img src="/images/portfolios/project-1.jpg" alt="Portfolio" />
+
+// Next.js Image component (recommended)
+import Image from 'next/image';
+
+<Image
+  src="/images/portfolios/project-1.jpg"
+  alt="Portfolio"
+  width={800}
+  height={600}
+/>
+```

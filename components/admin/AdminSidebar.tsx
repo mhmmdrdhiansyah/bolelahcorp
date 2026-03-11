@@ -176,14 +176,20 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       {/* User Info & Logout */}
       <div className="p-4 border-t border-white/5">
         {session?.user && (
-          <div className="mb-3 px-4 py-3 rounded-lg bg-white/5">
-            <p className="text-sm font-medium text-off-white truncate">
+          <Link
+            href="/admin/profile"
+            className="mb-3 px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors block group"
+          >
+            <p className="text-sm font-medium text-off-white truncate group-hover:text-coral transition-colors">
               {session.user.name || 'Admin'}
             </p>
-            <p className="text-xs text-mist/70 truncate">
+            <p className="text-xs text-mist/70 truncate group-hover:text-mist transition-colors">
               {session.user.email}
             </p>
-          </div>
+            <p className="text-xs text-coral/70 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              View Profile →
+            </p>
+          </Link>
         )}
         <motion.button
           onClick={handleLogout}

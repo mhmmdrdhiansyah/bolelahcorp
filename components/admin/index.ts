@@ -35,3 +35,7 @@ export { SettingsForm } from './SettingsForm';
 // Messages
 export { MessageList } from './MessageList';
 export { MessageListSkeleton } from './MessageListSkeleton';
+
+// Profile & Password
+export { PasswordChangeForm } from './PasswordChangeForm';
+export { PasswordChangeFormSkeleton } from './PasswordChangeFormSkeleton';
